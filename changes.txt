@@ -1,0 +1,6 @@
+04/07/19 11:50PM
+	Made new folder 'css'
+	Moved css properties to 'buttons.css' from 'index.html'
+	Fixed spacing in both files
+	Made new folder 'scripts'
+	Created script 'player.js'
