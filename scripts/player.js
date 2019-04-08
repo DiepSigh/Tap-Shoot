@@ -1,0 +1,1 @@
+//stores stats of player
