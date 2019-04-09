@@ -1,6 +1,13 @@
-04/07/19 11:50PM
+04/07/19 11:50PM Stephen
 	Made new folder 'css'
 	Moved css properties to 'buttons.css' from 'index.html'
 	Fixed spacing in both files
 	Made new folder 'scripts'
 	Created script 'player.js'
+
+04/08/19
+	Removed phaser folder
+	Imported phaser script in index.html
+	Worked on 'player' script
+		added 'initialize' and 'levelUp' function
+		created player sprite
