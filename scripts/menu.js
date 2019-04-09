@@ -1,14 +1,14 @@
 var Menu = {
 
     preload : function() {
-        game.load.image('menu', './assets/images/playbutton.jpg');
+        game.load.image('menu', './images/start.png');
     },
 
-    create: function() {
+    create : function() {
         this.add.sprite(0, 0, 'menu');
     },
 
-    startGame: function() {
+    startGame : function() {
         this.state.start('Game');
 
     }
