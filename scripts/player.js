@@ -1,3 +1,4 @@
+//Coded by DiepSigh
 //stores everything related to player
 //TO DO:
 //Firing arrows, rotation uLeft uRight dLeft dRight, 
@@ -45,8 +46,5 @@ function getPlayerHP(){
 }
 
 Player = function (game, x, y) {
-    Phaser.Sprite.call(this, game, x, y, 'player');
+    game.add.image(100,100, 'player');
 }
-
-
-//new Player(game, 100, 100);
