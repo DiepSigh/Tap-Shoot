@@ -4,6 +4,7 @@
             <Title>erick test main menu</Title>
             <meta charset="utf-8">
             <script src="https://cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser-arcade-physics.min.js"></script>
+            <script type= "text/javascript" src="scripts/changingscenes.js"></script>
             <script type= "text/javascript" src="scripts/main.js"></script>
             <script type= "text/javascript" src="scripts/menu.js"></script>
         </head>
@@ -38,12 +39,12 @@
     function preload(){
         //this.load.image('sprite', 'images/bidoff.jpg');
         //this.load.image('sprite1', 'images/bidoff.jpg');
-        this.load.image('menu', 'images/start.png');
+        //this.load.image('menu', 'images/start.png');
     }
 
     //phaser create function
     function create (){
-    	var testMenu = this.add.sprite(200,200, 'menu');
+    	//var testMenu = this.add.sprite(400,300, 'menu');
         /*var test = this.add.sprite((width * (testing.x * .01)), (height *(testing.y * .01)), 'sprite');
         //var test1 = this.add.sprite(500, 500, 'sprite1');*/
     }
