@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
     <html>
         <head>
             <Title>Rick Testing Spawns</Title>
             <meta charset="utf-8">
             <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
             <script type= "text/javascript" src="scripts/EnemySpawn.js"></script>
+            <script type= "text/javascript" src="scripts/Enemy.js"></script>
         </head>
         <script>
 
@@ -33,24 +34,25 @@
     var width = 800;
     var height = 600;
 
+    //phaser preload function
     function preload(){
         this.load.image('sprite', 'images/bidoff.jpg');
         this.load.image('sprite1', 'images/bidoff.jpg');
     }
 
+    //phaser create function
     function create (){
-        var test = this.add.sprite((width * 1), height * .25, 'sprite');
+        var test = this.add.sprite((width * (testing.x * .01)), (height *(testing.y * .01)), 'sprite');
         //var test1 = this.add.sprite(500, 500, 'sprite1');
-
     }
 
-    var array = [];
-
-    for (i=0;i<4;i++){
-        array.push(i);
-    }
-
-    console.log(array.length);
-
+    //create a new enemy, fill all parameters for enemy to be created.
+    var testing = new Enemy(10,10,100,"enemy",10,10,10);
+        testing.increaseHealth(10);
+        console.log(testing);
+    //create a new spawner, filling parameters.
+    var spawner = new Spawner(0, 0,[],[],[],[]);
+    spawner.fillTopRight();
+    spawner.RemoveEnemyTR();
     </script>
 </html>

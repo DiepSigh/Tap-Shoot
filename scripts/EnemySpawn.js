@@ -1,55 +1,109 @@
-var Spawner = (function(){
+var Spawner = (function(x,y,topLeft,topRight,botLeft,botRight){
 
-    var x, y, topLeft, topRight, botLeft, botRight, image;
+    this.x = x;
+    this.y = y;
+    this.topLeft = topLeft;
+    this.topRight = topRight;
+    this.botLeft = botLeft;
+    this.botRight = botRight;
 
-    function FillTopLeft(sprite){
+
+    this.FillTopLeft = function(){
         topLeft = [];
-
         for (i=0;i<4;i++){
-            topLeft.push(sprite);
+            topLeft.push(i);
+            console.log(i);
         }
     }
 
-    function fillTopRight(sprite){
+    //for loop to be 1-4 of array, for loop inside to create enemies...
+    //trying to create a function to fill all 4 arrays without calling each individual array in its own function
+    this.functioningTest = function(){
+        for (i=0;i<3;i++){
+            for (j=0;j<20;j++){
+                var temp;
+                temp = new Enemy(10,10,100,"enemy",10,10,10);
+                if(i == 0){
+                    topLeft.push(temp);
+                }
+                else if(i == 1){
+                    topRight.push(temp);
+                }
+                else if(i == 2){
+                    botRight.push(temp);
+                }
+                else if(i ==3){
+                    botLeft.push(temp);
+                }
+                delete temp;
+                break;
+            }
+        }
+        console.log(topRight);
+        console.log(topLeft);
+        console.log(botLeft);
+        console.log(botRight);
+    }
+
+
+    ////////////////////////////////////////
+    this.fillTopRight = function(){
         topRight = [];
-
         for (i=0;i<4;i++){
-            topRight.push(sprite);
+            var temp;
+            temp = new Enemy(10,10,100,"enemy",10,10,10);
+            topRight.push(temp);
         }
+        console.log(topRight);
     }
 
-    function fillbotLeft(sprite){
+    this.fillbotLeft = function(){
         botLeft = [];
-
         for (i=0;i<4;i++){
-            botLeft.push(sprite);
+            botLeft.push(i);
         }
     }
 
-    function fillbotRight(sprite){
+    this.fillbotRight = function(){
         botRight = [];
-
         for (i=0;i<4;i++){
-            botRight.push(sprite);
+            botRight.push();
         }
     }
 
-    function RemoveEnemyTL(){
+    this.checkEnemyArrays = function(){
+        if (topLeft.length < 5){
+            FillTopLeft();
+        }
+        
+        if (topRight.length < 5){
+            fillTopRight();
+        }
+
+        if (botLeft.length < 5){
+            fillbotLeft();
+        }
+        
+        if (botRight.length < 5){
+            fillbotRight();
+        }
+    }
+
+    this.RemoveEnemyTL = function(){
         delete topLeft[0];
+        
     }
 
-    function RemoveEnemyTR(){
+    this.RemoveEnemyTR = function(){
         delete topRight[0];
+        console.log(topRight);
     }
 
-    function RemoveEnemyBL(){
+    this.RemoveEnemyBL = function(){
         delete botLeft[0];
     }
 
-    function RemoveEnemyBR(){
+    this.RemoveEnemyBR = function(){
         delete botRight[0];
     }
-
-
-
-})();
+});
