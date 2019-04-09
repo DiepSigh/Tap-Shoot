@@ -1,12 +1,58 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
     <html>
         <head>
             <Title>Rick Testing Spawns</Title>
             <meta charset="utf-8">
-            <script src="scripts/EnemySpawn.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+            <script type= "text/javascript" src="scripts/EnemySpawn.js"></script>
+            <script type= "text/javascript" src="scripts/Enemy.js"></script>
         </head>
         <script>
-        var game = new Phaser.Game(config);
-        </script>
+
+        var config = {
+        type: Phaser.AUTO,
+        width: 800,
+        height: 600,
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 200 }
+            }
+        },
+        scene: {
+            preload : preload,
+            create : create
+        }
+    };
+
+    var game = new Phaser.Game(config);
+    //able to use math to place in each corner. 
+    // decimals for % based
+    // use width x % or height x %. 
+    // width x 0% = left side / / /  width x 100% = right side
+    // height x 0% = top side / / / height x 100% = bottom side
+    var width = 800;
+    var height = 600;
+
+    //phaser preload function
+    function preload(){
+        this.load.image('sprite', 'images/bidoff.jpg');
+        this.load.image('sprite1', 'images/bidoff.jpg');
+    }
+
+    //phaser create function
+    function create (){
+        var test = this.add.sprite((width * (testing.x * .01)), (height *(testing.y * .01)), 'sprite');
+        //var test1 = this.add.sprite(500, 500, 'sprite1');
+    }
+
+    //create a new enemy, fill all parameters for enemy to be created.
+    var testing = new Enemy(10,10,100,"enemy",10,10,10);
+        testing.increaseHealth(10);
+        console.log(testing);
+    //create a new spawner, filling parameters.
+    var spawner = new Spawner(0, 0,[],[],[],[]);
+    spawner.fillTopRight();
+    spawner.RemoveEnemyTR();
+    </script>
 </html>
