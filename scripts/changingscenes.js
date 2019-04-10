@@ -54,7 +54,6 @@ var GameScene = new Phaser.Class({
 
             var box = this.add.image(x, y, 'enemy');
 
-            //  Make them all input enabled
             box.setInteractive();
         }
 
@@ -63,11 +62,9 @@ var GameScene = new Phaser.Class({
 
     clickHandler: function (pointer, box)
     {
-        //  Disable our box
         box.input.enabled = false;
         box.setVisible(false);
 
-        //  Dispatch a Scene event
         this.events.emit('addScore');
     }
 
@@ -88,13 +85,10 @@ var UIScene = new Phaser.Class({
 
     create: function ()
     {
-        //  Our Text object to display the Score
         var info = this.add.text(10, 10, 'Score: 0', { font: '48px Arial', fill: '#FF0000' });
 
-        //  Grab a reference to the Game Scene
         var ourGame = this.scene.get('GameScene');
 
-        //  Listen for events from it
         ourGame.events.on('addScore', function () {
 
             this.score += 10;
@@ -111,7 +105,7 @@ var config = {
     width: 800,
     height: 600,
     backgroundColor: '#000000',
-    parent: '',
+    //parent: '',
     scene: [ MenuScene, GameScene, UIScene ]
 };
 
