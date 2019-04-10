@@ -8,6 +8,10 @@
 04/08/19
 	Removed phaser folder
 	Imported phaser script in index.html
-	Worked on 'player' script
+	Added in 'link.png'
+	Worked on 'player' script (WOP)
 		added 'initialize' and 'levelUp' function
 		created player sprite
+04/09/19
+	Pushed to and pulled from master
+	Added a few empty scripts
