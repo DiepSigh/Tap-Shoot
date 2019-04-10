@@ -4,3 +4,7 @@
 	Fixed spacing in both files
 	Made new folder 'scripts'
 	Created script 'player.js'
+04/10/19 4:15AM
+	Added new script - 'level.js' 
+	as well as a new directory - 'images/map/
+	all images were uploaded
