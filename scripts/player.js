@@ -4,7 +4,7 @@
 //Firing arrows, rotation uLeft uRight dLeft dRight, 
 
 function preload() {
-    game.load.image('player', 'assets/link.png');
+    this.load.image('player', 'assets/link.png');
 }
 
 //Max HP?
@@ -38,7 +38,6 @@ function checkOverlap(spriteA, spriteB) {
 
     return Phaser.Rectangle.intersects(boundsA, boundsB);
     
-
 }
 
 function getPlayerHP(){
@@ -46,5 +45,12 @@ function getPlayerHP(){
 }
 
 Player = function (game, x, y) {
-    game.add.image(100,100, 'player');
+    this.add.image(100,100, 'player');
+    this.anchor.set(0.5);
+    this.game.physics.enable(this);
+}
+
+function createPlayer(x, y) {
+    var temp = new Player(game, x, y);
+    game.add.existing(temp);
 }

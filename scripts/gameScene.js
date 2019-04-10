@@ -5,7 +5,7 @@ function preload () {
 
 function create ()
 {
-    new Player(game, 100, 100);
+    createPlayer(100,100);
 }
 
 function update ()
