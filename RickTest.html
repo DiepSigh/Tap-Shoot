@@ -31,6 +31,7 @@
     // use width x % or height x %. 
     // width x 0% = left side / / /  width x 100% = right side
     // height x 0% = top side / / / height x 100% = bottom side
+
     var width = 800;
     var height = 600;
 
@@ -42,12 +43,12 @@
 
     //phaser create function
     function create (){
-        var test = this.add.sprite((width * (testing.x * .01)), (height *(testing.y * .01)), 'sprite');
+        var test = this.add.sprite((width * (testing.x * .1)), (height *(testing.y * .1)), 'sprite');
         //var test1 = this.add.sprite(500, 500, 'sprite1');
     }
 
     //create a new enemy, fill all parameters for enemy to be created.
-    var testing = new Enemy(10,10,100,"enemy",10,10,10);
+    var testing = new Enemy(1,1,100,"enemy",10,10,10,false);
         testing.increaseHealth(10);
         console.log(testing);
     //create a new spawner, filling parameters.
