@@ -4,7 +4,6 @@
 	Fixed spacing in both files
 	Made new folder 'scripts'
 	Created script 'player.js'
-
 04/08/19
 	Removed phaser folder
 	Imported phaser script in index.html
@@ -15,3 +14,10 @@
 04/09/19
 	Pushed to and pulled from master
 	Added a few empty scripts
+04/10/19 4:15AM
+	Added new script - 'level.js' 
+	as well as a new directory - 'images/map/
+	all images were uploaded
+04/10/19 5:15AM
+	Added new file with styles - 'main.css' ('button.css' - required no more)
+	Erick's buttons added on canvas screen
