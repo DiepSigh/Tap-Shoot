@@ -8,3 +8,6 @@
 	Added new script - 'level.js' 
 	as well as a new directory - 'images/map/
 	all images were uploaded
+04/10/19 5:15AM
+	Added new file with styles - 'main.css' ('button.css' - required no more)
+	Erick's buttons added on canvas screen
