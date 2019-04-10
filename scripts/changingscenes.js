@@ -42,7 +42,7 @@ var GameScene = new Phaser.Class({
 
     preload: function ()
     {
-        this.load.image('enemy', 'images/enemy.png');
+        this.load.image('enemy', 'images/greenbox.png');
     },
 
     create: function ()
