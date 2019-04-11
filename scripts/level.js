@@ -2,6 +2,13 @@ var config = {
     type: Phaser.CANVAS,
     width: 800,
     height: 800,
+    physics: {
+        default: "arcade",
+        arcade: {
+            debug: true,
+            fps: 60
+        }
+    },
     scene: {
         preload: preload,
         create: create,
@@ -18,9 +25,25 @@ var topRightButton;
 var botLeftButton;
 var botRightButton;
 
+//PLAYER VARIABLES
+var HP = 3;
+var speed = 1; //speed of arrow
+var arrowTRActive = false;
+var arrowTLActive = false;
+var arrowBRActive = false;
+var arrowBLActive = false;
+var sin = Math.sin;
+var cos = Math.cos;
+var atan2 = Math.atan2;
 
 function preload ()
 {
+    //PLAYER
+    this.load.image('player', 'images/link.png');
+    this.load.image('arrowTR', 'images/arrowTR.png');
+    this.load.image('arrowTL', 'images/arrowTL.png');
+    this.load.image('arrowBR', 'images/arrowBR.png');
+    this.load.image('arrowBL', 'images/arrowBL.png');
 
     //Image controller buttons
     
@@ -128,7 +151,6 @@ function create ()
     
     var tempX = 50;
     var tempY = 50;
-
 
     for(x=0; x<8; x++)
     {
@@ -375,6 +397,7 @@ function create ()
 
                 topLeftButton.on('pointerdown', function(pointer)
                     {
+                        shootTL(arrows);
                        console.log("topLeftButtonPressed");
                     });
 
@@ -395,6 +418,7 @@ function create ()
 
                 topRightButton.on('pointerdown', function(pointer)
                     {
+                        shootTR(arrows);
                        console.log("topRightButtonPressed");
                     });   
 
@@ -415,6 +439,7 @@ function create ()
 
                 botLeftButton.on('pointerdown', function(pointer)
                     {
+                        shootBL(arrows);
                        console.log("botLeftButtonPressed");
                     });    
 
@@ -435,13 +460,82 @@ function create ()
 
                 botRightButton.on('pointerdown', function(pointer)
                     {
+                        shootBR(arrows);
                        console.log("botRightButtonPressed");
                     }); 
 
+    //PLAYER               
+    var arrows = this.add.group();
+    player = this.physics.add.image(400, 400, 'player');
+    
     resize();
-
 }
 
+
+//-----------------ARROWS --------------------------------
+function shootTR(arrows){
+    //creates sprite via group
+    if (!arrowTRActive){
+        arrowTR = arrows.create(450, 350, 'arrowTR');
+    
+        arrowTRActive = true;
+    }    
+}
+
+function shootTL(arrows){
+    //creates sprite via group
+    if (!arrowTLActive){
+        arrowTL = arrows.create(350, 350, 'arrowTL');
+        
+        arrowTLActive = true;
+    }
+}
+
+function shootBR(arrows){
+    //creates sprite via group
+    if (!arrowBRActive){
+        arrowBR = arrows.create(450, 450, 'arrowBR');
+        
+        arrowBRActive = true;
+    }
+}
+
+function shootBL(arrows){
+    if (!arrowBLActive){
+        arrowBL = arrows.create(350, 450, 'arrowBL');
+        
+        arrowBLActive = true;
+    }
+}
+
+//ARROW COLLISION CHECK
+function checkOverlapTop(spriteA) {
+
+    if (spriteA.y < (config.height - 750)){
+        return true;
+    } else{
+        return false;
+    }
+}
+
+function checkOverlapBot(spriteA) {
+
+    if (spriteA.y > (config.height - 50)){
+        return true;
+    } else{
+        return false;
+    }
+}
+
+//Player ROTATION
+function pointerMove (pointer) {  
+    var angleToPointer = Phaser.Math.Angle.BetweenPoints(player, pointer);
+    var angleDelta = angleToPointer - player.rotation;
+    
+    angleDelta = atan2(sin(angleDelta), cos(angleDelta));
+
+    player.rotation = angleToPointer;
+}
 
 //Resize whole canvas are here
 function resize() {
@@ -463,8 +557,43 @@ function resize() {
 
 function update()
 {
-
-    resize();
+    //ARROW CHECK
+    if (arrowTRActive) {
+        arrowTR.x += speed;
+        arrowTR.y -= speed;
+        if (checkOverlapTop(arrowTR)){
+            arrowTR.destroy();
+            arrowTRActive = false;
+        };
+    
+    }
+    if (arrowTLActive) {
+        arrowTL.x -= speed;
+        arrowTL.y -= speed;
+        if (checkOverlapTop(arrowTL)){
+            arrowTL.destroy();
+            arrowTLActive = false;
+        };
+    }
+    if (arrowBRActive) {
+        arrowBR.x += speed;
+        arrowBR.y += speed;
+        if (checkOverlapBot(arrowBR)){
+            arrowBR.destroy();
+            arrowBRActive = false;
+        };
+    }
+    if (arrowBLActive) {
+        arrowBL.x -= speed;
+        arrowBL.y += speed;
+        if (checkOverlapBot(arrowBL)){
+            arrowBL.destroy();
+            arrowBLActive = false;
+        };
+    }
+    
+    pointerMove(this.input.activePointer);
+    //resize();
 }
 
 
