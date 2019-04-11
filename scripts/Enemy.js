@@ -100,4 +100,13 @@ var Enemy = (function(x,y,health,tag,speed,damage,maxSpeed, active){
         this.speed = speed;
         this.damage = damage;
     }
+
+
+    function preload(){
+        this.load.image('Enemy', 'sprites/enemy.jpg');
+    }
+
+    function create(){
+        this.add.image(this.x,this.y,'Enemy');
+    }
 });
