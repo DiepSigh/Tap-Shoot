@@ -3,54 +3,84 @@
 //TO DO:
 //Firing arrows, rotation uLeft uRight dLeft dRight, 
 
-function preload() {
-    this.load.image('player', 'assets/link.png');
-}
+var Player = new Phaser.Class({
 
-//Max HP?
-var HP;
-var LV;
-var magicCD; //cooldown for magic attack
-var score;
+Extends: Phaser.Scene,
 
-function initialize() {
-    HP = 100;
-    LV = 1;
+preload: function() {
+    this.load.image('player', 'images/bidoff.jpg');
+    this.load.image('arrow', 'images/arrow.png');
+},
+
+create: function(){
+
+    this.maxHP;
+    this.HP;
+    this.magicCD; //cooldown for magic attack
+    this.score;
+    this.kills;
+    this.upgrades;
+
+    this.arrows;
+
+    this.sin = Math.sin;
+    this.cos = Math.cos;
+    this.atan2 = Math.atan2;
+
+    this.arrows = this.add.group();
+},
+
+initialize: function() {
+    maxHP = 3;
+    HP = 3;
     magicCD = 60;
     score = 0;
-}
+    kills = 0;
+    upgrades = 0;
+},
 
-function levelUp() {
-    LV++;
-    HP+=10;
-
-}
-
-function hurt(){
-    HP-=10;
+hurt: function(){
+    HP-=1;
     //checkOverlap or call when enemy reaches end of array
-}
+},
 
-function checkOverlap(spriteA, spriteB) {
+spawn: function(){
+    this.add.image(400, 400, 'player');
+},
+
+shoot: function(arrow){
+    //creates sprite via group
+    arrow.create(450, 350, 'arrow');
+},
+
+//check overlap with enemies
+checkOverlap: function(spriteA, spriteB) {
 
     var boundsA = spriteA.getBounds();
     var boundsB = spriteB.getBounds();
 
     return Phaser.Rectangle.intersects(boundsA, boundsB);
     
-}
+},
 
-function getPlayerHP(){
+getPlayerHP: function(){
     return HP;
 }
 
-Player = function (game, x, y) {
-    this.add.image(100,100, 'player');
-    this.anchor.set(0.5);
-    this.game.physics.enable(this);
-}
+// function pointerMove (pointer) {  
+//     var angleToPointer = Phaser.Math.Angle.BetweenPoints(ship, pointer);
+//     var angleDelta = angleToPointer - ship.rotation;
+    
+//     angleDelta = atan2(sin(angleDelta), cos(angleDelta));
 
-function createPlayer(x, y) {
-    var temp = new Player(game, x, y);
-    game.add.existing(temp);
-}
+// }
+
+// Player = function (game, x, y) {
+//     this.add.image(x, y, 'player');
+// }
+
+// function createPlayer(game, x, y) {
+//     var temp = new Player(game, x, y);
+// }
+
+});
