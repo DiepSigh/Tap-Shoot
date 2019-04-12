@@ -28,13 +28,27 @@ var botRightButton;
 //PLAYER VARIABLES
 var HP = 3;
 var speed = 1; //speed of arrow
+var kills = 0;
+var score = 0;
+var magicCoins = 10;
+//Arrows
 var arrowTRActive = false;
 var arrowTLActive = false;
 var arrowBRActive = false;
 var arrowBLActive = false;
+//Magic Arrows
+var magicArrowTRActive = false;
+var magicArrowTLActive = false;
+var magicArrowBRActive = false;
+var magicArrowBLActive = false;
+//Cursor
 var sin = Math.sin;
 var cos = Math.cos;
 var atan2 = Math.atan2;
+//Text Display
+var scoreText = '';
+var lifeText = '';
+var levelText = '';
 
 function preload ()
 {
@@ -44,6 +58,11 @@ function preload ()
     this.load.image('arrowTL', 'images/arrowTL.png');
     this.load.image('arrowBR', 'images/arrowBR.png');
     this.load.image('arrowBL', 'images/arrowBL.png');
+
+    this.load.image('magicArrowBL', 'images/magicArrowBL.png');
+    this.load.image('magicArrowBR', 'images/magicArrowBR.png');
+    this.load.image('magicArrowTR', 'images/magicArrowTR.png');
+    this.load.image('magicArrowTL', 'images/magicArrowTL.png');
 
     //Image controller buttons
     
@@ -106,7 +125,6 @@ function preload ()
         //Background tiles
         this.load.image('bg', 'images/map/desert/bg.png');
 
-
         //Enemies spawn towers
         this.load.image('enemy_spawn_tower', 'images/map/desert/enemy_spawn_tower.png');
         this.load.image('ruins_right', 'images/map/desert/ruins_right.png');
@@ -142,7 +160,6 @@ function preload ()
         this.load.image('grass04', 'images/map/desert/grass04.png');
 
     }
-
 
 }
 
@@ -377,6 +394,13 @@ function create ()
 
                 centerButton.on('pointerdown', function(pointer)
                     {
+                        if (magicCoins >= 10) {
+                            magicShootTL(arrows);
+                            magicShootTR(arrows);
+                            magicShootBL(arrows);
+                            magicShootBR(arrows);
+                            magicCoins -= 10;
+                        }
                     console.log("CenterButtonPressed");
                     });
 
@@ -468,14 +492,19 @@ function create ()
     var arrows = this.add.group();
     player = this.physics.add.image(400, 400, 'player');
     
+    //DISPLAY TEXT
+    scoreText = this.add.text(110, 10, 'Score', { fontFamily: 'Arial', fontSize: 32, color: '#000000' });
+    lifeText = this.add.text(110, 50, 'HP', { fontFamily: 'Arial', fontSize: 32, color: '#000000' });
+    levelText = this.add.text(110, 90, 'Level', { fontFamily: 'Arial', fontSize: 32, color: '#000000' });
+
     resize();
 }
 
 
-//-----------------ARROWS --------------------------------
+//-------------------------- ARROWS --------------------------------
 function shootTR(arrows){
-    //creates sprite via group
     if (!arrowTRActive){
+        //creates sprite via group
         arrowTR = arrows.create(450, 350, 'arrowTR');
     
         arrowTRActive = true;
@@ -483,7 +512,6 @@ function shootTR(arrows){
 }
 
 function shootTL(arrows){
-    //creates sprite via group
     if (!arrowTLActive){
         arrowTL = arrows.create(350, 350, 'arrowTL');
         
@@ -492,7 +520,6 @@ function shootTL(arrows){
 }
 
 function shootBR(arrows){
-    //creates sprite via group
     if (!arrowBRActive){
         arrowBR = arrows.create(450, 450, 'arrowBR');
         
@@ -508,9 +535,27 @@ function shootBL(arrows){
     }
 }
 
+//MAGIC SHOOT ARROW I S H E R E
+function magicShootBL(arrows){
+    magicArrowBL = arrows.create(350, 450, 'magicArrowBL');
+    magicArrowBLActive = true;
+}
+function magicShootBR(arrows){
+    magicArrowBR = arrows.create(450, 450, 'magicArrowBR');
+    magicArrowBRActive = true;
+}
+function magicShootTL(arrows){
+    magicArrowTL = arrows.create(350, 350, 'magicArrowTL');
+    magicArrowTLActive = true;
+}
+function magicShootTR(arrows){
+    magicArrowTR = arrows.create(450, 350, 'magicArrowTR');
+    magicArrowTRActive = true;
+}
+
 //ARROW COLLISION CHECK
 function checkOverlapTop(spriteA) {
-
+    //when arrow reaches top of canvas kinda
     if (spriteA.y < (config.height - 750)){
         return true;
     } else{
@@ -519,7 +564,6 @@ function checkOverlapTop(spriteA) {
 }
 
 function checkOverlapBot(spriteA) {
-
     if (spriteA.y > (config.height - 50)){
         return true;
     } else{
@@ -563,15 +607,16 @@ function update()
         arrowTR.y -= speed;
         if (checkOverlapTop(arrowTR)){
             arrowTR.destroy();
+            magicCoins++;
             arrowTRActive = false;
         };
-    
     }
     if (arrowTLActive) {
         arrowTL.x -= speed;
         arrowTL.y -= speed;
         if (checkOverlapTop(arrowTL)){
             arrowTL.destroy();
+            magicCoins++;
             arrowTLActive = false;
         };
     }
@@ -580,6 +625,7 @@ function update()
         arrowBR.y += speed;
         if (checkOverlapBot(arrowBR)){
             arrowBR.destroy();
+            magicCoins++;
             arrowBRActive = false;
         };
     }
@@ -588,10 +634,56 @@ function update()
         arrowBL.y += speed;
         if (checkOverlapBot(arrowBL)){
             arrowBL.destroy();
+            magicCoins++;
             arrowBLActive = false;
         };
     }
     
+    if (magicArrowBLActive) {
+        magicArrowBL.x -= speed;
+        magicArrowBL.y += speed;
+        if (checkOverlapBot(magicArrowBL)){
+            magicArrowBL.destroy();
+            magicArrowBLActive = false;
+        };
+    }
+    if (magicArrowBRActive) {
+        magicArrowBR.x += speed;
+        magicArrowBR.y += speed;
+        if (checkOverlapBot(magicArrowBR)){
+            magicArrowBR.destroy();
+            magicArrowBRActive = false;
+        };
+    }
+    if (magicArrowTRActive) {
+        magicArrowTR.x += speed;
+        magicArrowTR.y -= speed;
+        if (checkOverlapTop(magicArrowTR)){
+            magicArrowTR.destroy();
+            magicArrowTRActive = false;
+        };
+    }
+    if (magicArrowTLActive) {
+        magicArrowTL.x -= speed;
+        magicArrowTL.y -= speed;
+        if (checkOverlapTop(magicArrowTL)){
+            magicArrowTL.destroy();
+            magicArrowTLActive = false;
+        };
+    }
+
+    //LEVEL UP / ARROW SPEED UP
+    if (kills >= 20) {
+        speed++;
+        kills = 0;
+        score += 5;
+    }
+
+    //Update Text
+    scoreText.text = "Score: " + score;
+    lifeText.text = "HP: " + HP;
+    levelText.text = "Level: " + speed;
+
     pointerMove(this.input.activePointer);
     //resize();
 }
