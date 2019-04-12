@@ -2,6 +2,13 @@ var config = {
     type: Phaser.CANVAS,
     width: 800,
     height: 800,
+    physics: {
+        default: "arcade",
+        arcade: {
+            debug: true,
+            fps: 60
+        }
+    },
     scene: {
         preload: preload,
         create: create,
@@ -10,12 +17,43 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
+window.addEventListener("resize", resize, false);
 
+var centerButton;
+var topLeftButton;
+var topRightButton;
+var botLeftButton;
+var botRightButton;
+
+//PLAYER VARIABLES
+var HP = 3;
+var speed = 1; //speed of arrow
+var arrowTRActive = false;
+var arrowTLActive = false;
+var arrowBRActive = false;
+var arrowBLActive = false;
+var sin = Math.sin;
+var cos = Math.cos;
+var atan2 = Math.atan2;
 
 function preload ()
 {
-    var randPreload = Phaser.Math.Between(0, 1); 
 
+    //PLAYER
+    this.load.image('player', 'images/link.png');
+    this.load.image('arrowTR', 'images/arrowTR.png');
+    this.load.image('arrowTL', 'images/arrowTL.png');
+    this.load.image('arrowBR', 'images/arrowBR.png');
+    this.load.image('arrowBL', 'images/arrowBL.png');
+
+    //Image controller buttons
+    
+    this.load.image('button', 'images/button.png');
+
+    //Generation random number for preload
+
+    var randPreload = Phaser.Math.Between(0, 1); 
+    
     //Preload  ----------- FOREST MAP -----------
     if(randPreload === 0)
     {
@@ -40,11 +78,9 @@ function preload ()
         this.load.image('rock01', 'images/map/forest/rock01.png');
         this.load.image('rock02', 'images/map/forest/rock02.png');
         this.load.image('rock03', 'images/map/forest/rock03.png');
-        
 
         //Tower in center
         this.load.image('tower', 'images/map/forest/tower_forest.png');
-           
 
         //Background trees
         this.load.image('tree01', 'images/map/forest/tree01.png');
@@ -89,10 +125,8 @@ function preload ()
         this.load.image('rock02', 'images/map/desert/rock02.png');
         this.load.image('rock03', 'images/map/desert/rock03.png');
 
-
         //Castle in center
         this.load.image('tower', 'images/map/desert/tower_desert.png');
-
 
         //Background trees
         this.load.image('tree01', 'images/map/desert/tree01.png');
@@ -120,7 +154,6 @@ function create ()
     var tempX = 50;
     var tempY = 50;
 
-
     for(x=0; x<8; x++)
     {
 
@@ -132,15 +165,36 @@ function create ()
             this.add.image(tempX, tempY, 'bg');
 
             // <--- Spawn tower in the center of the map
-            if(x === 4 && y === 4 ) {  this.add.image(tempX - 50, tempY - 50, 'tower'); }
+            if(x === 4 && y === 4 ) 
+            {
+                this.add.image(tempX - 50, tempY - 50, 'tower'); 
+
+            }
 
             // <--- Spawn ruins enemy spawn
-            if(x === 0 && y === 0 ) {  this.add.image(tempX , tempY, 'ruins_left');  this.add.image(tempX, tempY - 25, 'enemy_spawn_tower');}
-            if(x === 0 && y === 7 ) {  this.add.image(tempX, tempY, 'ruins_right'); this.add.image(tempX, tempY - 25, 'enemy_spawn_tower');}
-            if(x === 7 && y === 0 ) {  this.add.image(tempX, tempY, 'ruins_left'); this.add.image(tempX, tempY - 25, 'enemy_spawn_tower');}
-            if(x === 7 && y === 7 ) {  this.add.image(tempX, tempY, 'ruins_right'); this.add.image(tempX, tempY - 25, 'enemy_spawn_tower');}
+            if(x === 0 && y === 0 ) 
+            {  
+                this.add.image(tempX , tempY, 'ruins_left');  this.add.image(tempX, tempY - 25, 'enemy_spawn_tower'); 
 
-            //Adding on map bunch of trees or bushes from the top
+            }
+            if(x === 0 && y === 7 ) 
+            { 
+                 this.add.image(tempX, tempY, 'ruins_right'); this.add.image(tempX, tempY - 25, 'enemy_spawn_tower');
+          
+            }
+            if(x === 7 && y === 0 ) 
+            { 
+                 this.add.image(tempX, tempY, 'ruins_left'); this.add.image(tempX, tempY - 25, 'enemy_spawn_tower');
+  
+            }
+            if(x === 7 && y === 7 ) 
+            { 
+                 this.add.image(tempX, tempY, 'ruins_right'); this.add.image(tempX, tempY - 25, 'enemy_spawn_tower');
+      
+
+            }
+
+            // Adding on map bunch of trees or bushes from the top
             if(x === 0 && (y === 1) || x === 0 && (y === 2) || x === 0 && (y === 3) || x === 0 && (y === 4) || x === 0 && (y === 5) || x === 0 && (y === 6) ||
             x === 1 && (y === 2) || x === 1 && (y === 3) || x === 1 && (y === 4) || x === 1 && (y === 5) ||
             x === 2 && (y === 3) || x === 2 && (y === 4) 
@@ -303,16 +357,248 @@ function create ()
 
         tempY = tempY + 100;
         tempX = 50;
+
     }
 
+     // --------------- BUTTONS ARE HERE  ---------------  // 
 
+                // Adding CENTER button on screen
+                centerButton = this.add.image(config.width / 2, config.height / 2, 'button');
+                centerButton.setInteractive();
+                centerButton.on('pointerover', function(pointer)
+                    { 
+                    console.log("CursorHover"); 
+                    
+                    });
+
+                centerButton.on('pointerout', function(pointer)
+                    {
+                    console.log("CursorOut");
+                    
+                    });
+
+                centerButton.on('pointerdown', function(pointer)
+                    {
+                    console.log("CenterButtonPressed");
+                    });
+
+                // Adding TOP LEFT button on screen
+                topLeftButton = this.add.image(config.width - 750, config.height - 750, 'button');
+                topLeftButton.setInteractive();
+                topLeftButton.on('pointerover', function(pointer)
+                    { 
+                      console.log("CursorHover"); 
+                      
+                    });
+
+                topLeftButton.on('pointerout', function(pointer)
+                    {
+                       console.log("CursorOut");
+                       
+                    });
+
+                topLeftButton.on('pointerdown', function(pointer)
+                    {
+                        shootTL(arrows);
+                       console.log("topLeftButtonPressed");
+                    });
+
+                // Adding TOP RIGHT button on screen
+                topRightButton = this.add.image(config.width - 50, config.height - 750, 'button');
+                topRightButton.setInteractive();
+                topRightButton.on('pointerover', function(pointer)
+                    { 
+                      console.log("CursorHover"); 
+                      
+                    });
+
+                topRightButton.on('pointerout', function(pointer)
+                    {
+                       console.log("CursorOut");
+                       
+                    });
+
+                topRightButton.on('pointerdown', function(pointer)
+                    {
+                        shootTR(arrows);
+                       console.log("topRightButtonPressed");
+                    });   
+
+                // Adding BOTTOM LEFT button on screen
+                botLeftButton = this.add.image(config.width - 750 , config.height - 50, 'button');
+                botLeftButton.setInteractive();
+                botLeftButton.on('pointerover', function(pointer)
+                    { 
+                      console.log("CursorHover"); 
+                      
+                    });
+
+                botLeftButton.on('pointerout', function(pointer)
+                    {
+                       console.log("CursorOut");
+                       
+                    });
+
+                botLeftButton.on('pointerdown', function(pointer)
+                    {
+                        shootBL(arrows);
+                       console.log("botLeftButtonPressed");
+                    });    
+
+                // Adding BOTTOM RIGHT button on screen
+                botRightButton = this.add.image(config.width - 50, config.height - 50, 'button');
+                botRightButton.setInteractive();
+                botRightButton.on('pointerover', function(pointer)
+                    { 
+                      console.log("CursorHover"); 
+                      
+                    });
+
+                botRightButton.on('pointerout', function(pointer)
+                    {
+                       console.log("CursorOut");
+                       
+                    });
+
+                botRightButton.on('pointerdown', function(pointer)
+                    {
+                        shootBR(arrows);
+                       console.log("botRightButtonPressed");
+                    }); 
+
+    //PLAYER               
+    var arrows = this.add.group();
+    player = this.physics.add.image(400, 400, 'player');
+    
+    resize();
 }
 
+
+//-----------------ARROWS --------------------------------
+function shootTR(arrows){
+    //creates sprite via group
+    if (!arrowTRActive){
+        arrowTR = arrows.create(450, 350, 'arrowTR');
+    
+        arrowTRActive = true;
+    }    
+}
+
+function shootTL(arrows){
+    //creates sprite via group
+    if (!arrowTLActive){
+        arrowTL = arrows.create(350, 350, 'arrowTL');
+        
+        arrowTLActive = true;
+    }
+}
+
+function shootBR(arrows){
+    //creates sprite via group
+    if (!arrowBRActive){
+        arrowBR = arrows.create(450, 450, 'arrowBR');
+        
+        arrowBRActive = true;
+    }
+}
+
+function shootBL(arrows){
+    if (!arrowBLActive){
+        arrowBL = arrows.create(350, 450, 'arrowBL');
+        
+        arrowBLActive = true;
+    }
+}
+
+//ARROW COLLISION CHECK
+function checkOverlapTop(spriteA) {
+
+    if (spriteA.y < (config.height - 750)){
+        return true;
+    } else{
+        return false;
+    }
+}
+
+function checkOverlapBot(spriteA) {
+
+    if (spriteA.y > (config.height - 50)){
+        return true;
+    } else{
+        return false;
+    }
+}
+
+//Player ROTATION
+function pointerMove (pointer) {  
+    var angleToPointer = Phaser.Math.Angle.BetweenPoints(player, pointer);
+    var angleDelta = angleToPointer - player.rotation;
+    
+    angleDelta = atan2(sin(angleDelta), cos(angleDelta));
+
+    player.rotation = angleToPointer;
+}
+
+//Resize whole canvas are here
+function resize() {
+    var canvas = document.querySelector("canvas");
+    var windowWidth = window.innerWidth;
+    var windowHeight = window.innerHeight;
+    var windowRatio = windowWidth / windowHeight;
+    var gameRatio = game.config.width / game.config.height;
+    if(windowRatio < gameRatio){
+        canvas.style.width = windowWidth + "px";
+        canvas.style.height = (windowWidth / gameRatio) + "px";
+    }
+    else{
+        canvas.style.width = (windowHeight * gameRatio) + "px";
+        canvas.style.height = windowHeight + "px";
+    }
+}
 
 
 function update()
 {
-
+    //ARROW CHECK
+    if (arrowTRActive) {
+        arrowTR.x += speed;
+        arrowTR.y -= speed;
+        if (checkOverlapTop(arrowTR)){
+            arrowTR.destroy();
+            arrowTRActive = false;
+        };
     
+    }
+    if (arrowTLActive) {
+        arrowTL.x -= speed;
+        arrowTL.y -= speed;
+        if (checkOverlapTop(arrowTL)){
+            arrowTL.destroy();
+            arrowTLActive = false;
+        };
+    }
+    if (arrowBRActive) {
+        arrowBR.x += speed;
+        arrowBR.y += speed;
+        if (checkOverlapBot(arrowBR)){
+            arrowBR.destroy();
+            arrowBRActive = false;
+        };
+    }
+    if (arrowBLActive) {
+        arrowBL.x -= speed;
+        arrowBL.y += speed;
+        if (checkOverlapBot(arrowBL)){
+            arrowBL.destroy();
+            arrowBLActive = false;
+        };
+    }
     
+    pointerMove(this.input.activePointer);
+    //resize();
 }
+
+
+
+
+
