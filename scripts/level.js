@@ -71,7 +71,7 @@ function preload ()
     this.load.audio('launchArrow', ['audio/launch.mp3']);
     this.load.audio('impactArrow', ['audio/impact.mp3']);
     //PLAYER
-    this.load.image('player', 'images/link.png');
+    this.load.image('player', 'images/archer.png');
     this.load.image('arrowTR', 'images/arrowTR.png');
     this.load.image('arrowTL', 'images/arrowTL.png');
     this.load.image('arrowBR', 'images/arrowBR.png');
@@ -427,15 +427,13 @@ function create ()
 
                 centerButton.on('pointerdown', function(pointer)
                     {
-                       
-                        launchArrow.play();
-                        impactArrow.play();
 
                         if (magicCoins >= 10) {
                             magicShootTL(arrows);
                             magicShootTR(arrows);
                             magicShootBL(arrows);
                             magicShootBR(arrows);
+                            playShootSound();
                             magicCoins -= 10;
                         }
                     console.log("CenterButtonPressed");
@@ -459,8 +457,7 @@ function create ()
                 topLeftButton.on('pointerdown', function(pointer)
                     {
                         shootTL(arrows);
-                        launchArrow.play();
-                        impactArrow.play();
+                        
                        console.log("topLeftButtonPressed");
                     });
 
@@ -482,8 +479,7 @@ function create ()
                 topRightButton.on('pointerdown', function(pointer)
                     {
                         shootTR(arrows);
-                        launchArrow.play();
-                        impactArrow.play();
+                        
                        console.log("topRightButtonPressed");
                     });   
 
@@ -505,8 +501,7 @@ function create ()
                 botLeftButton.on('pointerdown', function(pointer)
                     {
                         shootBL(arrows);
-                        launchArrow.play();
-                        impactArrow.play();
+                        
                        console.log("botLeftButtonPressed");
                     });    
 
@@ -528,8 +523,7 @@ function create ()
                 botRightButton.on('pointerdown', function(pointer)
                     {
                         shootBR(arrows);
-                        launchArrow.play();
-                        impactArrow.play();
+                        
                        console.log("botRightButtonPressed");
                     }); 
 
@@ -553,13 +547,18 @@ function create ()
     resize();
 }
 
+//SOUND FUNCTIONS
+function playShootSound(){
+    launchArrow.play();
+    impactArrow.play();
+}
 
 //-------------------------- ARROWS --------------------------------
 function shootTR(arrows){
     if (!arrowTRActive){
         //creates sprite via group
         arrowTR = arrows.create(450, 350, 'arrowTR');
-    
+        playShootSound();
         arrowTRActive = true;
     }    
 }
@@ -567,7 +566,7 @@ function shootTR(arrows){
 function shootTL(arrows){
     if (!arrowTLActive){
         arrowTL = arrows.create(350, 350, 'arrowTL');
-        
+        playShootSound();
         arrowTLActive = true;
     }
 }
@@ -575,7 +574,7 @@ function shootTL(arrows){
 function shootBR(arrows){
     if (!arrowBRActive){
         arrowBR = arrows.create(450, 450, 'arrowBR');
-        
+        playShootSound();
         arrowBRActive = true;
     }
 }
@@ -583,7 +582,7 @@ function shootBR(arrows){
 function shootBL(arrows){
     if (!arrowBLActive){
         arrowBL = arrows.create(350, 450, 'arrowBL');
-        
+        playShootSound();
         arrowBLActive = true;
     }
 }
