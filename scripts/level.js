@@ -96,7 +96,9 @@ function preload ()
         //this.load.image('test', 'test.png');
 
         //level audio theme preload
-        this.load.audio('levelTheme', ['audio/levelThemeMap1.mp3' ]);
+        var randPreloadTheme = Phaser.Math.Between(0, 1); 
+        if(randPreloadTheme === 0){this.load.audio('levelTheme', ['audio/levelTheme1Map1.mp3' ]);}
+        if(randPreloadTheme === 1){this.load.audio('levelTheme', ['audio/levelTheme2Map1.mp3' ]);}
         this.load.audio('atmosphereSound', ['audio/forestSound.mp3' ]);
 
 
@@ -146,7 +148,10 @@ function preload ()
         //this.load.image('test', 'test.png');
 
         //level audio theme preload
-        this.load.audio('levelTheme', ['audio/levelThemeMap2.mp3']);
+        var randPreloadTheme = Phaser.Math.Between(0, 1); 
+        if(randPreloadTheme === 0 ){this.load.audio('levelTheme', ['audio/levelTheme1Map2.mp3']);}
+        if(randPreloadTheme === 1 ){this.load.audio('levelTheme', ['audio/levelTheme2Map2.mp3']);}
+        
         this.load.audio('atmosphereSound', ['audio/desertSound.mp3' ]);
 
         //Background tiles
