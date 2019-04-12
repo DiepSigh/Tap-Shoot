@@ -1,4 +1,4 @@
-class GameScene extends Phaser.Scene{
+class MenuScene extends Phaser.Scene{
 
     constructor(){
     super('MyMenuScene');
@@ -20,7 +20,7 @@ class GameScene extends Phaser.Scene{
 
         this.input.once('pointerdown', function () {
 
-            //console.log('From MenuScene to GameScene');
+            console.log('From MenuScene to GameScene');
 
             this.scene.start('GameScene');
 
