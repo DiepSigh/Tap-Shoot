@@ -4,27 +4,30 @@
             <Title>erick test main menu</Title>
             <meta charset="utf-8">
             <script src="https://cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser-arcade-physics.min.js"></script>
-            <script type= "text/javascript" src="scripts/changingscenes.js"></script>
+            <script type= "text/javascript" src="scripts/Menu.js"></script>
+            <script type="text/javascript" src="scripts/game.js"></script>
         </head>
         <script>
+
 
         var config = {
         type: Phaser.AUTO,
         width: 800,
         height: 600,
+        //scene: [MenuScene, GameScene, UIScene],
         physics: {
             default: 'arcade',
             arcade: {
                 gravity: { y: 200 }
             }
         },
-        scene: {
+        scene: { 
             preload : preload,
             create : create
         }
 
 
-    };
+    	};
 
     var game = new Phaser.Game(config);
     //able to use math to place in each corner. 
@@ -44,6 +47,10 @@
 
     //phaser create function
     function create (){
+    	this.scene.add('menuScene', MenuScene, true, {x: 0, y: 0});
+    	this.scene.add('gameScene', GameScene, true, {x: 0, y: 0});
+    	//this.scene.add('userInterface', UIScene, true, {x: 0, y: 0});
+
     	//var testMenu = this.add.sprite(400,300, 'menu');
         /*var test = this.add.sprite((width * (testing.x * .01)), (height *(testing.y * .01)), 'sprite');
         //var test1 = this.add.sprite(500, 500, 'sprite1');*/

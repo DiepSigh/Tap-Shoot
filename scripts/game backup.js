@@ -1,41 +1,10 @@
-var MenuScene = new Phaser.Class({
+var GameScene = new Phaser.Class({
 
     Extends: Phaser.Scene,
 
-    initialize:
+    //initialize:
 
-    function MenuScene ()
-    {
-        Phaser.Scene.call(this, { key: 'MenuScene' });
-    },
-
-    preload: function ()
-    {
-        this.load.image('menu', 'images/start.png');
-    },
-
-    create: function ()
-    {
-        this.add.sprite(400, 300, 'menu');
-
-        this.input.once('pointerdown', function () {
-
-            console.log('From MenuScene to GameScene');
-
-            this.scene.start('GameScene');
-
-        }, this);
-    }
-
-});
-
-/*var GameScene = new Phaser.Class({
-
-    Extends: Phaser.Scene,
-
-    initialize:
-
-    function GameScene ()
+    GameScene: function()
     {
         Phaser.Scene.call(this, { key: 'GameScene' });
     },
@@ -58,6 +27,7 @@ var MenuScene = new Phaser.Class({
         }
 
         this.input.on('gameobjectup', this.clickHandler, this);
+        //TestFunction();
     },
 
     clickHandler: function (pointer, box)
@@ -66,6 +36,10 @@ var MenuScene = new Phaser.Class({
         box.setVisible(false);
 
         this.events.emit('addScore');
+    },
+
+    TestFunction: function(){
+        console.log("HELLO");
     }
 
 });
@@ -74,9 +48,9 @@ var UIScene = new Phaser.Class({
 
     Extends: Phaser.Scene,
 
-    initialize:
+    // initialize:
 
-    function UIScene ()
+    UIScene: function ()
     {
         Phaser.Scene.call(this, { key: 'UIScene', active: true });
 
@@ -98,15 +72,15 @@ var UIScene = new Phaser.Class({
         }, this);
     }
 
-});*/
+});
 
-var config = {
+/*var config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
     backgroundColor: '#000000',
     //parent: '',
-    scene: [ MenuScene ]
+    scene: [ GameScene, UIScene ]
 };
 
-var game = new Phaser.Game(config);
+var game = new Phaser.Game(config);*/

@@ -1,51 +1,20 @@
-var MenuScene = new Phaser.Class({
+class GameScene extends Phaser.Scene{
 
-    Extends: Phaser.Scene,
+   constructor(){
+    super('MyGameScene');
+   }
 
-    initialize:
-
-    function MenuScene ()
-    {
-        Phaser.Scene.call(this, { key: 'MenuScene' });
-    },
-
-    preload: function ()
-    {
-        this.load.image('menu', 'images/start.png');
-    },
-
-    create: function ()
-    {
-        this.add.sprite(400, 300, 'menu');
-
-        this.input.once('pointerdown', function () {
-
-            console.log('From MenuScene to GameScene');
-
-            this.scene.start('GameScene');
-
-        }, this);
-    }
-
-});
-
-/*var GameScene = new Phaser.Class({
-
-    Extends: Phaser.Scene,
-
-    initialize:
-
-    function GameScene ()
+    GameScene()
     {
         Phaser.Scene.call(this, { key: 'GameScene' });
-    },
+    }
 
-    preload: function ()
+    preload()
     {
         this.load.image('enemy', 'images/greenbox.png');
-    },
+    }
 
-    create: function ()
+    create()
     {
         for (var i = 0; i < 10; i++)
         {
@@ -58,9 +27,10 @@ var MenuScene = new Phaser.Class({
         }
 
         this.input.on('gameobjectup', this.clickHandler, this);
-    },
+        //TestFunction();
+    }
 
-    clickHandler: function (pointer, box)
+    clickHandler(pointer, box)
     {
         box.input.enabled = false;
         box.setVisible(false);
@@ -68,22 +38,22 @@ var MenuScene = new Phaser.Class({
         this.events.emit('addScore');
     }
 
-});
+    TestFunction(){
+        console.log("HELLO");
+    }
 
-var UIScene = new Phaser.Class({
+};
 
-    Extends: Phaser.Scene,
+/*class UIScene extends Phaser.Scene{
 
-    initialize:
-
-    function UIScene ()
+    UIScene()
     {
         Phaser.Scene.call(this, { key: 'UIScene', active: true });
 
         this.score = 0;
-    },
+    }
 
-    create: function ()
+    create()
     {
         var info = this.add.text(10, 10, 'Score: 0', { font: '48px Arial', fill: '#FF0000' });
 
@@ -98,15 +68,15 @@ var UIScene = new Phaser.Class({
         }, this);
     }
 
-});*/
+};*/
 
-var config = {
+/*var config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
     backgroundColor: '#000000',
     //parent: '',
-    scene: [ MenuScene ]
+    scene: [ GameScene, UIScene ]
 };
 
-var game = new Phaser.Game(config);
+var game = new Phaser.Game(config);*/

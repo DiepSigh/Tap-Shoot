@@ -1,33 +1,34 @@
-var MenuScene = new Phaser.Class({
+class GameScene extends Phaser.Scene{
 
-    Extends: Phaser.Scene,
+    constructor(){
+    super('MyMenuScene');
+   }
 
-    initialize:
-
-    function MenuScene ()
+    MenuScene ()
     {
         Phaser.Scene.call(this, { key: 'MenuScene' });
-    },
+    }
 
-    preload: function ()
+    preload()
     {
         this.load.image('menu', 'images/start.png');
-    },
+    }
 
-    create: function ()
+    create()
     {
         this.add.sprite(400, 300, 'menu');
 
         this.input.once('pointerdown', function () {
 
-            console.log('From MenuScene to GameScene');
+            //console.log('From MenuScene to GameScene');
 
             this.scene.start('GameScene');
 
         }, this);
+
     }
 
-});
+};
 
 /*var GameScene = new Phaser.Class({
 
@@ -100,7 +101,7 @@ var UIScene = new Phaser.Class({
 
 });*/
 
-var config = {
+/*var config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
@@ -109,4 +110,4 @@ var config = {
     scene: [ MenuScene ]
 };
 
-var game = new Phaser.Game(config);
+var game = new Phaser.Game(config);*/
