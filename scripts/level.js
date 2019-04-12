@@ -1,5 +1,5 @@
 var config = {
-    type: Phaser.CANVAS,
+    type: Phaser.AUTO, 
     width: 800,
     height: 800,
     physics: {
@@ -13,6 +13,16 @@ var config = {
         preload: preload,
         create: create,
         update: update
+    },
+    audio: {
+        disableWebAudio: true,
+        mute: false,
+        volume: 1,
+        rate: 1,
+        detune: 0,
+        seek: 0,
+        loop: false,
+        delay: 0
     }
 };
 
@@ -25,12 +35,15 @@ var topRightButton;
 var botLeftButton;
 var botRightButton;
 
+var levelTheme;
+var forestSound;
 //PLAYER VARIABLES
 var HP = 3;
 var speed = 1; //speed of arrow
 var kills = 0;
 var score = 0;
-var magicCoins = 10;
+var magicCharge = 1;
+var magicCoins = 0;
 //Arrows
 var arrowTRActive = false;
 var arrowTLActive = false;
@@ -46,26 +59,48 @@ var sin = Math.sin;
 var cos = Math.cos;
 var atan2 = Math.atan2;
 //Text Display
+var magicText = '';
 var scoreText = '';
 var lifeText = '';
 var levelText = '';
 
+var magicTemp = 0;
+var scoreTemp = 0;
+var lifeTemp = 0;
+var levelTemp = 0;
+
+var launchArrow;
+var impactArrow;
+
+var enemyLeftSide;
+var enemyRightSide;
+
+var magicArrowTL;
+var magicArrowBL;
+var magicArrowTR;
+var magicArrowBR;
+
 function preload ()
 {
+    //Enemy sprite preload 
+    this.load.spritesheet('enemyRightSide', 'images/enemy/bat/bat_RightSide.png', { frameWidth: 97, frameHeight: 62, endFrame: 5} );
+    this.load.spritesheet('enemyLeftSide', 'images/enemy/bat/bat_LeftSide.png', { frameWidth: 97, frameHeight: 62, endFrame: 5} );
+    //Magic sprites preload
+    this.load.spritesheet('magicArrowTL', 'images/magic/magicLT.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
+    this.load.spritesheet('magicArrowTR', 'images/magic/magicRT.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
+    this.load.spritesheet('magicArrowBL', 'images/magic/magicLB.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
+    this.load.spritesheet('magicArrowBR', 'images/magic/magicRB.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
+    //Sound Effects
+    this.load.audio('launchArrow', ['audio/launch.mp3']);
+    this.load.audio('impactArrow', ['audio/impact.mp3']);
     //PLAYER
-    this.load.image('player', 'images/link.png');
+    this.load.image('player', 'images/archer.png');
     this.load.image('arrowTR', 'images/arrowTR.png');
     this.load.image('arrowTL', 'images/arrowTL.png');
     this.load.image('arrowBR', 'images/arrowBR.png');
     this.load.image('arrowBL', 'images/arrowBL.png');
 
-    this.load.image('magicArrowBL', 'images/magicArrowBL.png');
-    this.load.image('magicArrowBR', 'images/magicArrowBR.png');
-    this.load.image('magicArrowTR', 'images/magicArrowTR.png');
-    this.load.image('magicArrowTL', 'images/magicArrowTL.png');
-
     //Image controller buttons
-    
     this.load.image('button', 'images/button.png');
 
     //Generation random number for preload
@@ -76,6 +111,13 @@ function preload ()
     {
         //TEST
         //this.load.image('test', 'test.png');
+
+        //level audio theme preload
+        var randPreloadTheme = Phaser.Math.Between(0, 1); 
+        if(randPreloadTheme === 0){this.load.audio('levelTheme', ['audio/levelTheme1Map1.mp3' ]);}
+        if(randPreloadTheme === 1){this.load.audio('levelTheme', ['audio/levelTheme2Map1.mp3' ]);}
+        this.load.audio('atmosphereSound', ['audio/forestSound.mp3' ]);
+
 
         //Background tiles
         this.load.image('bg', 'images/map/forest/bg.png');
@@ -113,7 +155,6 @@ function preload ()
         this.load.image('grass02', 'images/map/forest/grass02.png');
         this.load.image('grass03', 'images/map/forest/grass03.png');
         this.load.image('grass04', 'images/map/forest/grass04.png');
-
     }
 
     //Preload  ----------- DESERT MAP -----------
@@ -121,6 +162,13 @@ function preload ()
     {
         //TEST
         //this.load.image('test', 'test.png');
+
+        //level audio theme preload
+        var randPreloadTheme = Phaser.Math.Between(0, 1); 
+        if(randPreloadTheme === 0 ){this.load.audio('levelTheme', ['audio/levelTheme1Map2.mp3']);}
+        if(randPreloadTheme === 1 ){this.load.audio('levelTheme', ['audio/levelTheme2Map2.mp3']);}
+        
+        this.load.audio('atmosphereSound', ['audio/desertSound.mp3' ]);
 
         //Background tiles
         this.load.image('bg', 'images/map/desert/bg.png');
@@ -158,13 +206,14 @@ function preload ()
         this.load.image('grass02', 'images/map/desert/grass02.png');
         this.load.image('grass03', 'images/map/desert/grass03.png');
         this.load.image('grass04', 'images/map/desert/grass04.png');
-
     }
-
 }
 
 function create ()
 {
+
+    launchArrow =  this.sound.add('launchArrow'); // <--- activation sound then player shoots arrow
+    impactArrow = this.sound.add('impactArrow'); // <--- activation sound then arrow impacts enemy
     
     var tempX = 50;
     var tempY = 50;
@@ -183,7 +232,6 @@ function create ()
             if(x === 4 && y === 4 ) 
             {
                 this.add.image(tempX - 50, tempY - 50, 'tower'); 
-
             }
 
             // <--- Spawn ruins enemy spawn
@@ -205,8 +253,6 @@ function create ()
             if(x === 7 && y === 7 ) 
             { 
                  this.add.image(tempX, tempY, 'ruins_right'); this.add.image(tempX, tempY - 25, 'enemy_spawn_tower');
-      
-
             }
 
             // Adding on map bunch of trees or bushes from the top
@@ -217,7 +263,6 @@ function create ()
             {
                 
                 this.add.image(tempX, tempY, 'bg'); // <--- Adding background tile
-
 
                         var randGrass = Phaser.Math.Between(0, 5);
                         if(randGrass === 0) { this.add.image(tempX, tempY, 'grass01'); }
@@ -246,7 +291,6 @@ function create ()
                         if(randTree === 4) { this.add.image(tempX, tempY - 35, 'tree05'); }
                         if(randTree === 5) { this.add.image(tempX, tempY - 35, 'tree06'); }
                         if(randTree === 6) { this.add.image(tempX, tempY - 35, 'tree07'); }
-
 
             }
 
@@ -295,7 +339,6 @@ function create ()
                  x === 3 && y === 2 || x === 4 && y === 2 
             )
             {
-                
               
                 var randGrass = Phaser.Math.Between(0, 5);
                 if(randGrass === 0) { this.add.image(tempX, tempY, 'grass01'); }
@@ -394,12 +437,14 @@ function create ()
 
                 centerButton.on('pointerdown', function(pointer)
                     {
-                        if (magicCoins >= 10) {
+
+                        if (magicCharge >= 1) {
                             magicShootTL(arrows);
                             magicShootTR(arrows);
                             magicShootBL(arrows);
                             magicShootBR(arrows);
-                            magicCoins -= 10;
+                            playShootSound();
+                            magicCharge--;
                         }
                     console.log("CenterButtonPressed");
                     });
@@ -422,6 +467,7 @@ function create ()
                 topLeftButton.on('pointerdown', function(pointer)
                     {
                         shootTL(arrows);
+                        
                        console.log("topLeftButtonPressed");
                     });
 
@@ -443,6 +489,7 @@ function create ()
                 topRightButton.on('pointerdown', function(pointer)
                     {
                         shootTR(arrows);
+                        
                        console.log("topRightButtonPressed");
                     });   
 
@@ -464,6 +511,7 @@ function create ()
                 botLeftButton.on('pointerdown', function(pointer)
                     {
                         shootBL(arrows);
+                        
                        console.log("botLeftButtonPressed");
                     });    
 
@@ -485,28 +533,160 @@ function create ()
                 botRightButton.on('pointerdown', function(pointer)
                     {
                         shootBR(arrows);
+                        
                        console.log("botRightButtonPressed");
                     }); 
+
+
+        // ---------- ENEMIES SPRITE ANIMATIONS HERE ----------  //
+            
+        // enemies for RIGHT SIDE
+        //constructor
+        enemyRightSide = {
+            key : 'enemyRightSide',
+            frames: this.anims.generateFrameNumbers('enemyRightSide', {start: 1, end: 6, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constractor
+        this.anims.create(enemyRightSide);
+    
+        //add sprites based on constructor and call animation play
+        var enemyRightTop = this.add.sprite(700,100, 'enemyRightSide');
+        enemyRightTop.anims.play('enemyRightSide');
+
+        var enemyRightBot = this.add.sprite(700,700, 'enemyRightSide');
+        enemyRightBot.anims.play('enemyRightSide');
+
+
+
+        // enemies for LEFT SIDE
+        //constructor
+        enemyLeftSide = {
+            key : 'enemyLeftSide',
+            frames: this.anims.generateFrameNumbers('enemyLeftSide', {start: 1, end: 6, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(enemyLeftSide);
+    
+        //add sprites based on constructor and call animation play
+        var enemyLeftTop = this.add.sprite(100,100, 'enemyLeftSide');
+        enemyLeftTop.anims.play('enemyLeftSide');
+                        
+        var enemyLeftBot = this.add.sprite(100,700, 'enemyLeftSide');
+        enemyLeftBot.anims.play('enemyLeftSide');
+
+
+
+        // magic for LEFT TOP SIDE
+        //constructor
+        magicArrowTL = {
+            key : 'magicArrowTL',
+            frames: this.anims.generateFrameNumbers('magicArrowTL', {start: 1, end: 4, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(magicArrowTL);
+    
+        //add sprites based on constructor and call animation play
+        magicArrowTL = this.add.sprite(350,350, 'magicArrowTL');
+        magicArrowTL.alpha = 0;
+        magicArrowTL.anims.play('magicArrowTL');
+
+        // magic for LEFT BOT SIDE
+        //constructor
+        magicArrowBL = {
+            key : 'magicArrowBL',
+            frames: this.anims.generateFrameNumbers('magicArrowBL', {start: 1, end: 4, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(magicArrowBL);
+    
+        //add sprites based on constructor and call animation play
+        magicArrowBL = this.add.sprite(350,450, 'magicArrowBL');
+        magicArrowBL.alpha = 0;
+        magicArrowBL.anims.play('magicArrowBL');
+
+
+        // magic for RIGHT TOP SIDE
+        //constructor
+        magicArrowTR = {
+            key : 'magicArrowTR',
+            frames: this.anims.generateFrameNumbers('magicArrowTR', {start: 1, end: 4, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(magicArrowTR);
+    
+        //add sprites based on constructor and call animation play
+        magicArrowTR = this.add.sprite(450,350, 'magicArrowTR');
+        magicArrowTR.alpha = 0;
+        magicArrowTR.anims.play('magicArrowTR');
+
+        
+        // magic for RIGHT BOT SIDE
+        //constructor
+        magicArrowBR = {
+            key : 'magicArrowBR',
+            frames: this.anims.generateFrameNumbers('magicArrowBR', {start: 1, end: 4, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(magicArrowBR);
+    
+        //add sprites based on constructor and call animation play
+        magicArrowBR = this.add.sprite(450,450, 'magicArrowBR');
+        magicArrowBR.alpha = 0;
+        magicArrowBR.anims.play('magicArrowBR');
+
+        ////// --------- DONE WITH SPRITE ANIMATION --------- ///////
+
+        //Play theme sound here           
+        levelTheme =  this.sound.add('levelTheme');
+        levelTheme.play();
+        levelTheme.loop = true;
+        forestSound = this.sound.add('atmosphereSound');
+        forestSound.play();
+        forestSound.loop = true;
 
     //PLAYER               
     var arrows = this.add.group();
     player = this.physics.add.image(400, 400, 'player');
     
     //DISPLAY TEXT
-    scoreText = this.add.text(110, 10, 'Score', { fontFamily: 'Arial', fontSize: 32, color: '#000000' });
-    lifeText = this.add.text(110, 50, 'HP', { fontFamily: 'Arial', fontSize: 32, color: '#000000' });
-    levelText = this.add.text(110, 90, 'Level', { fontFamily: 'Arial', fontSize: 32, color: '#000000' });
+    magicText = this.add.text(340, 10, 'Magic Charge', { fontFamily: 'Arial', fontSize: 32, color: '#ffffff' });
+    scoreText = this.add.text(340, 50, 'Score', { fontFamily: 'Arial', fontSize: 32, color: '#ffffff' });
+    lifeText = this.add.text(140, 10, 'HP', { fontFamily: 'Arial', fontSize: 32, color: '#ffffff' });
+    levelText = this.add.text(140, 50, 'Level', { fontFamily: 'Arial', fontSize: 32, color: '#ffffff' });
 
     resize();
 }
 
+//SOUND FUNCTIONS
+function playShootSound(){
+    launchArrow.play();
+    impactArrow.play();
+}
 
 //-------------------------- ARROWS --------------------------------
 function shootTR(arrows){
     if (!arrowTRActive){
         //creates sprite via group
         arrowTR = arrows.create(450, 350, 'arrowTR');
-    
+        playShootSound();
         arrowTRActive = true;
     }    
 }
@@ -514,7 +694,7 @@ function shootTR(arrows){
 function shootTL(arrows){
     if (!arrowTLActive){
         arrowTL = arrows.create(350, 350, 'arrowTL');
-        
+        playShootSound();
         arrowTLActive = true;
     }
 }
@@ -522,7 +702,7 @@ function shootTL(arrows){
 function shootBR(arrows){
     if (!arrowBRActive){
         arrowBR = arrows.create(450, 450, 'arrowBR');
-        
+        playShootSound();
         arrowBRActive = true;
     }
 }
@@ -530,26 +710,26 @@ function shootBR(arrows){
 function shootBL(arrows){
     if (!arrowBLActive){
         arrowBL = arrows.create(350, 450, 'arrowBL');
-        
+        playShootSound();
         arrowBLActive = true;
     }
 }
 
 //MAGIC SHOOT ARROW I S H E R E
-function magicShootBL(arrows){
-    magicArrowBL = arrows.create(350, 450, 'magicArrowBL');
+function magicShootBL(){
+    magicArrowBL.alpha = 1;
     magicArrowBLActive = true;
 }
-function magicShootBR(arrows){
-    magicArrowBR = arrows.create(450, 450, 'magicArrowBR');
+function magicShootBR(){
+    magicArrowBR.alpha = 1;
     magicArrowBRActive = true;
 }
-function magicShootTL(arrows){
-    magicArrowTL = arrows.create(350, 350, 'magicArrowTL');
+function magicShootTL(){
+    magicArrowTL.alpha = 1;
     magicArrowTLActive = true;
 }
-function magicShootTR(arrows){
-    magicArrowTR = arrows.create(450, 350, 'magicArrowTR');
+function magicShootTR(){
+    magicArrowTR.alpha = 1; 
     magicArrowTRActive = true;
 }
 
@@ -643,32 +823,40 @@ function update()
         magicArrowBL.x -= speed;
         magicArrowBL.y += speed;
         if (checkOverlapBot(magicArrowBL)){
-            magicArrowBL.destroy();
+            magicArrowBL.alpha = 0;
             magicArrowBLActive = false;
+            magicArrowBL.x = 350;
+            magicArrowBL.y = 450;
         };
     }
     if (magicArrowBRActive) {
         magicArrowBR.x += speed;
         magicArrowBR.y += speed;
         if (checkOverlapBot(magicArrowBR)){
-            magicArrowBR.destroy();
+            magicArrowBR.alpha = 0;
             magicArrowBRActive = false;
+            magicArrowBR.x = 450;
+            magicArrowBR.y = 450;
         };
     }
     if (magicArrowTRActive) {
         magicArrowTR.x += speed;
         magicArrowTR.y -= speed;
         if (checkOverlapTop(magicArrowTR)){
-            magicArrowTR.destroy();
+            magicArrowTR.alpha = 0;
             magicArrowTRActive = false;
+            magicArrowTR.x = 450;
+            magicArrowTR.y = 350;
         };
     }
     if (magicArrowTLActive) {
         magicArrowTL.x -= speed;
         magicArrowTL.y -= speed;
         if (checkOverlapTop(magicArrowTL)){
-            magicArrowTL.destroy();
+            magicArrowTL.alpha = 0;
             magicArrowTLActive = false;
+            magicArrowTL.x = 350;
+            magicArrowTL.y = 350;
         };
     }
 
@@ -679,13 +867,31 @@ function update()
         score += 5;
     }
 
-    //Update Text
-    scoreText.text = "Score: " + score;
-    lifeText.text = "HP: " + HP;
-    levelText.text = "Level: " + speed;
+    if (magicCoins == 10) {
+        magicCharge++;
+        magicCoins -= 10;
+    }
+
+    //Update Text.
+    //If statements to avoid lag
+    if (magicTemp != magicCharge) {
+        magicText.text = "Magic Charge: " + magicCharge;
+        magicTemp = magicCharge;
+    }
+    if (scoreTemp != score) {
+        scoreText.text = "Score: " + score;
+        scoreTemp = score;
+    }
+    if (lifeTemp != HP) {
+        lifeText.text = "HP: " + HP;
+        lifeTemp = HP;
+    }
+    if (levelTemp != speed) {
+        levelText.text = "Level: " + speed;
+        levelTemp = speed;
+    }
 
     pointerMove(this.input.activePointer);
-    //resize();
 }
 
 
