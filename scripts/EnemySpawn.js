@@ -1,31 +1,4 @@
-var config = {
-    type: Phaser.CANVAS,
-    width: 800,
-    height: 800,
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    }
-};
-
-var game = new Phaser.Game(config);
-
-
-
-function preload(){
-    this.load.image('enemy', 'images/bidoff.jpg');
-}
-
-function create(){
-    this.add.image('enemy',0,0);
-}
-
-function update(){
-
-}
-
-var Spawner = (function(x,y,topLeft,topRight,botLeft,botRight){
+var Spawner = new Phaser.Class(function(x,y,topLeft,topRight,botLeft,botRight){
     this.x = x;
     this.y = y;
     this.topLeft = topLeft;
