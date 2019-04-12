@@ -71,6 +71,7 @@ var levelTemp = 0;
 
 var launchArrow;
 var impactArrow;
+var magic;
 
 var enemyLeftSide;
 var enemyRightSide;
@@ -93,6 +94,7 @@ function preload ()
     //Sound Effects
     this.load.audio('launchArrow', ['audio/launch.mp3']);
     this.load.audio('impactArrow', ['audio/impact.mp3']);
+    this.load.audio('magic', ['audio/magic.mp3']);
     //PLAYER
     this.load.image('player', 'images/archer.png');
     this.load.image('arrowTR', 'images/arrowTR.png');
@@ -214,6 +216,7 @@ function create ()
 
     launchArrow =  this.sound.add('launchArrow'); // <--- activation sound then player shoots arrow
     impactArrow = this.sound.add('impactArrow'); // <--- activation sound then arrow impacts enemy
+    magic = this.sound.add('magic');
     
     var tempX = 50;
     var tempY = 50;
@@ -443,7 +446,7 @@ function create ()
                             magicShootTR(arrows);
                             magicShootBL(arrows);
                             magicShootBR(arrows);
-                            playShootSound();
+                            magic.play();
                             magicCharge--;
                         }
                     console.log("CenterButtonPressed");
