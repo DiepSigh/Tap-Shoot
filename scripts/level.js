@@ -73,8 +73,6 @@ var magicLeftBot;
 var magicRightTop;
 var magicRightBot;
 
-
-
 function preload ()
 {
     //Enemy sprite preload 
@@ -85,7 +83,6 @@ function preload ()
     this.load.spritesheet('magicRightTop', 'images/magic/magicRT.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
     this.load.spritesheet('magicLeftBot', 'images/magic/magicLB.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
     this.load.spritesheet('magicRightBot', 'images/magic/magicRB.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
-
     //Sound Effects
     this.load.audio('launchArrow', ['audio/launch.mp3']);
     this.load.audio('impactArrow', ['audio/impact.mp3']);
@@ -157,7 +154,6 @@ function preload ()
         this.load.image('grass02', 'images/map/forest/grass02.png');
         this.load.image('grass03', 'images/map/forest/grass03.png');
         this.load.image('grass04', 'images/map/forest/grass04.png');
-
     }
 
     //Preload  ----------- DESERT MAP -----------
@@ -209,9 +205,7 @@ function preload ()
         this.load.image('grass02', 'images/map/desert/grass02.png');
         this.load.image('grass03', 'images/map/desert/grass03.png');
         this.load.image('grass04', 'images/map/desert/grass04.png');
-
     }
-
 }
 
 function create ()
@@ -219,7 +213,6 @@ function create ()
 
     launchArrow =  this.sound.add('launchArrow'); // <--- activation sound then player shoots arrow
     impactArrow = this.sound.add('impactArrow'); // <--- activation sound then arrow impacts enemy
-
     
     var tempX = 50;
     var tempY = 50;
@@ -238,7 +231,6 @@ function create ()
             if(x === 4 && y === 4 ) 
             {
                 this.add.image(tempX - 50, tempY - 50, 'tower'); 
-
             }
 
             // <--- Spawn ruins enemy spawn
@@ -260,8 +252,6 @@ function create ()
             if(x === 7 && y === 7 ) 
             { 
                  this.add.image(tempX, tempY, 'ruins_right'); this.add.image(tempX, tempY - 25, 'enemy_spawn_tower');
-      
-
             }
 
             // Adding on map bunch of trees or bushes from the top
@@ -272,7 +262,6 @@ function create ()
             {
                 
                 this.add.image(tempX, tempY, 'bg'); // <--- Adding background tile
-
 
                         var randGrass = Phaser.Math.Between(0, 5);
                         if(randGrass === 0) { this.add.image(tempX, tempY, 'grass01'); }
@@ -301,7 +290,6 @@ function create ()
                         if(randTree === 4) { this.add.image(tempX, tempY - 35, 'tree05'); }
                         if(randTree === 5) { this.add.image(tempX, tempY - 35, 'tree06'); }
                         if(randTree === 6) { this.add.image(tempX, tempY - 35, 'tree07'); }
-
 
             }
 
@@ -350,7 +338,6 @@ function create ()
                  x === 3 && y === 2 || x === 4 && y === 2 
             )
             {
-                
               
                 var randGrass = Phaser.Math.Between(0, 5);
                 if(randGrass === 0) { this.add.image(tempX, tempY, 'grass01'); }
@@ -427,8 +414,6 @@ function create ()
 
         tempY = tempY + 100;
         tempX = 50;
-
-
 
     }
 
@@ -552,124 +537,118 @@ function create ()
                     }); 
 
 
+        // ---------- ENEMIES SPRITE ANIMATIONS HERE ----------  //
+            
+        // enemies for RIGHT SIDE
+        //constructor
+        enemyRightSide = {
+            key : 'enemyRightSide',
+            frames: this.anims.generateFrameNumbers('enemyRightSide', {start: 1, end: 6, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constractor
+        this.anims.create(enemyRightSide);
+    
+        //add sprites based on constructor and call animation play
+        var enemyRightTop = this.add.sprite(700,100, 'enemyRightSide');
+        enemyRightTop.anims.play('enemyRightSide');
+
+        var enemyRightBot = this.add.sprite(700,700, 'enemyRightSide');
+        enemyRightBot.anims.play('enemyRightSide');
 
 
 
-                    // ---------- ENEMIES SPRITE ANIMATIONS HERE ----------  //
-                       
-                    // enemies for RIGHT SIDE
-                    //constructor
-                    enemyRightSide = {
-                        key : 'enemyRightSide',
-                        frames: this.anims.generateFrameNumbers('enemyRightSide', {start: 1, end: 6, first: 1}),
-                        frameRate: 12, // how fast animation plays
-                        repeat: 500 // how many times animation repeats 
+        // enemies for LEFT SIDE
+        //constructor
+        enemyLeftSide = {
+            key : 'enemyLeftSide',
+            frames: this.anims.generateFrameNumbers('enemyLeftSide', {start: 1, end: 6, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(enemyLeftSide);
+    
+        //add sprites based on constructor and call animation play
+        var enemyLeftTop = this.add.sprite(100,100, 'enemyLeftSide');
+        enemyLeftTop.anims.play('enemyLeftSide');
                         
-                    };
-                    //call constractor
-                    this.anims.create(enemyRightSide);
-                
-                    //add sprites based on constructor and call animation play
-                    var enemyRightTop = this.add.sprite(700,100, 'enemyRightSide');
-                    enemyRightTop.anims.play('enemyRightSide');
-
-                    var enemyRightBot = this.add.sprite(700,700, 'enemyRightSide');
-                    enemyRightBot.anims.play('enemyRightSide');
+        var enemyLeftBot = this.add.sprite(100,700, 'enemyLeftSide');
+        enemyLeftBot.anims.play('enemyLeftSide');
 
 
 
-                    // enemies for LEFT SIDE
-                    //constructor
-                    enemyLeftSide = {
-                        key : 'enemyLeftSide',
-                        frames: this.anims.generateFrameNumbers('enemyLeftSide', {start: 1, end: 6, first: 1}),
-                        frameRate: 12, // how fast animation plays
-                        repeat: 500 // how many times animation repeats 
+        // magic for LEFT TOP SIDE
+        //constructor
+        magicLeftTop = {
+            key : 'magicLeftTop',
+            frames: this.anims.generateFrameNumbers('magicLeftTop', {start: 1, end: 4, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(magicLeftTop);
+    
+        //add sprites based on constructor and call animation play
+        var magicLeftTop = this.add.sprite(350,350, 'magicLeftTop');
+        magicLeftTop.anims.play('magicLeftTop');
+
+        // magic for LEFT BOT SIDE
+        //constructor
+        magicLeftBot = {
+            key : 'magicLeftBot',
+            frames: this.anims.generateFrameNumbers('magicLeftBot', {start: 1, end: 4, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(magicLeftBot);
+    
+        //add sprites based on constructor and call animation play
+        var magicLeftBot = this.add.sprite(350,450, 'magicLeftBot');
+        magicLeftBot.anims.play('magicLeftBot');
+
+
+        // magic for RIGHT TOP SIDE
+        //constructor
+        magicRightTop = {
+            key : 'magicRightTop',
+            frames: this.anims.generateFrameNumbers('magicRightTop', {start: 1, end: 4, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(magicRightTop);
+    
+        //add sprites based on constructor and call animation play
+        var magicRightTop = this.add.sprite(450,350, 'magicRightTop');
+        magicRightTop.anims.play('magicRightTop');
+
+        
+        // magic for RIGHT BOT SIDE
+        //constructor
+        magicRightBot = {
+            key : 'magicRightBot',
+            frames: this.anims.generateFrameNumbers('magicRightBot', {start: 1, end: 4, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(magicRightBot);
+    
+        //add sprites based on constructor and call animation play
+        var magicRightBot = this.add.sprite(450,450, 'magicRightBot');
+        magicRightBot.anims.play('magicRightBot');
                         
-                    };
-                    //call constructor
-                    this.anims.create(enemyLeftSide);
-                
-                    //add sprites based on constructor and call animation play
-                    var enemyLeftTop = this.add.sprite(100,100, 'enemyLeftSide');
-                    enemyLeftTop.anims.play('enemyLeftSide');
-                                    
-                    var enemyLeftBot = this.add.sprite(100,700, 'enemyLeftSide');
-                    enemyLeftBot.anims.play('enemyLeftSide');
 
-
-
-                    // magic for LEFT TOP SIDE
-                    //constructor
-                    magicLeftTop = {
-                        key : 'magicLeftTop',
-                        frames: this.anims.generateFrameNumbers('magicLeftTop', {start: 1, end: 4, first: 1}),
-                        frameRate: 12, // how fast animation plays
-                        repeat: 500 // how many times animation repeats 
-                        
-                    };
-                    //call constructor
-                    this.anims.create(magicLeftTop);
-                
-                    //add sprites based on constructor and call animation play
-                    var magicLeftTop = this.add.sprite(350,350, 'magicLeftTop');
-                    magicLeftTop.anims.play('magicLeftTop');
-
-                    // magic for LEFT BOT SIDE
-                    //constructor
-                    magicLeftBot = {
-                        key : 'magicLeftBot',
-                        frames: this.anims.generateFrameNumbers('magicLeftBot', {start: 1, end: 4, first: 1}),
-                        frameRate: 12, // how fast animation plays
-                        repeat: 500 // how many times animation repeats 
-                        
-                    };
-                    //call constructor
-                    this.anims.create(magicLeftBot);
-                
-                    //add sprites based on constructor and call animation play
-                    var magicLeftBot = this.add.sprite(350,450, 'magicLeftBot');
-                    magicLeftBot.anims.play('magicLeftBot');
-
-
-                    // magic for RIGHT TOP SIDE
-                    //constructor
-                    magicRightTop = {
-                        key : 'magicRightTop',
-                        frames: this.anims.generateFrameNumbers('magicRightTop', {start: 1, end: 4, first: 1}),
-                        frameRate: 12, // how fast animation plays
-                        repeat: 500 // how many times animation repeats 
-                        
-                    };
-                    //call constructor
-                    this.anims.create(magicRightTop);
-                
-                    //add sprites based on constructor and call animation play
-                    var magicRightTop = this.add.sprite(450,350, 'magicRightTop');
-                    magicRightTop.anims.play('magicRightTop');
-
-                    
-                    // magic for RIGHT BOT SIDE
-                    //constructor
-                    magicRightBot = {
-                        key : 'magicRightBot',
-                        frames: this.anims.generateFrameNumbers('magicRightBot', {start: 1, end: 4, first: 1}),
-                        frameRate: 12, // how fast animation plays
-                        repeat: 500 // how many times animation repeats 
-                        
-                    };
-                    //call constructor
-                    this.anims.create(magicRightBot);
-                
-                    //add sprites based on constructor and call animation play
-                    var magicRightBot = this.add.sprite(450,450, 'magicRightBot');
-                    magicRightBot.anims.play('magicRightBot');
-                                    
-
-                    ////// --------- DONE WITH SPRITE ANIMATION --------- ///////
-
-
-
+        ////// --------- DONE WITH SPRITE ANIMATION --------- ///////
 
         //Play theme sound here           
         levelTheme =  this.sound.add('levelTheme');
@@ -678,6 +657,7 @@ function create ()
         forestSound = this.sound.add('atmosphereSound');
         forestSound.play();
         forestSound.loop = true;
+
     //PLAYER               
     var arrows = this.add.group();
     player = this.physics.add.image(400, 400, 'player');
@@ -880,7 +860,6 @@ function update()
     levelText.text = "Level: " + speed;
 
     pointerMove(this.input.activePointer);
-    //resize();
 }
 
 
