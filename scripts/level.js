@@ -29,6 +29,8 @@ var botLeftButton;
 var botRightButton;
 
 var levelTheme;
+var forestSound;
+
 var launchArrow;
 var impactArrow;
 
@@ -54,6 +56,8 @@ function preload ()
 
         //level audio theme preload
         this.load.audio('levelTheme', ['audio/levelThemeMap1.mp3' ]);
+        this.load.audio('atmosphereSound', ['audio/forestSound.mp3' ]);
+
 
         //Background tiles
         this.load.image('bg', 'images/map/forest/bg.png');
@@ -102,6 +106,7 @@ function preload ()
 
         //level audio theme preload
         this.load.audio('levelTheme', ['audio/levelThemeMap2.mp3']);
+        this.load.audio('atmosphereSound', ['audio/desertSound.mp3' ]);
 
         //Background tiles
         this.load.image('bg', 'images/map/desert/bg.png');
@@ -478,7 +483,7 @@ function create ()
                     {
                         launchArrow.play();
                         impactArrow.play();
-                        
+
                        console.log("botRightButtonPressed");
                     }); 
 
@@ -487,6 +492,9 @@ function create ()
         levelTheme =  this.sound.add('levelTheme');
         levelTheme.play();
         levelTheme.loop = true;
+        forestSound = this.sound.add('atmosphereSound');
+        forestSound.play();
+        forestSound.loop = true;
 
         
 
