@@ -1,3 +1,4 @@
+//ERICK HOBBS SCRIPT
 class GameScene extends Phaser.Scene{
 
    constructor(){

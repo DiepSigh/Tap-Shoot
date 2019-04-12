@@ -1,3 +1,4 @@
+//ERICK HOBBS SCRIPT
 class MenuScene extends Phaser.Scene{
 
     constructor(){
@@ -16,7 +17,7 @@ class MenuScene extends Phaser.Scene{
 
     create()
     {
-        this.add.sprite(400, 300, 'menu');
+        this.add.sprite(400, 400, 'menu');
 
         this.input.once('pointerdown', function () {
 
