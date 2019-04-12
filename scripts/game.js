@@ -16,7 +16,9 @@ class GameScene extends Phaser.Scene{
 
     create()
     {
-        for (var i = 0; i < 10; i++)
+        this.add.sprite(400, 300, 'enemy');
+
+        /*for (var i = 0; i < 10; i++)
         {
             var x = Phaser.Math.Between(0, 800);
             var y = Phaser.Math.Between(0, 600);
@@ -27,10 +29,10 @@ class GameScene extends Phaser.Scene{
         }
 
         this.input.on('gameobjectup', this.clickHandler, this);
-        //TestFunction();
+        //TestFunction();*/
     }
 
-    clickHandler(pointer, box)
+    /*clickHandler(pointer, box)
     {
         box.input.enabled = false;
         box.setVisible(false);
@@ -40,7 +42,7 @@ class GameScene extends Phaser.Scene{
 
     TestFunction(){
         console.log("HELLO");
-    }
+    }*/
 
 };
 
