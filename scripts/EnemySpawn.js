@@ -5,58 +5,25 @@ var config = {
     scene: {
         preload: preload,
         create: create,
-        update: update,
-        render: render
+        update: update
     }
 };
 
-var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, render: render });
+var game = new Phaser.Game(config);
 
-var timer; 
-var total;
+
 
 function preload(){
-
+    this.load.image('enemy', 'images/bidoff.jpg');
 }
 
 function create(){
-    /*
-    timer = game.time.create(false);
-
-    timer.loop(1000, UpdateCounter, this);
-
-    timer.start();*/
-
-    game.stage.backgroundColor = '#000';
-
-    //  Create our Timer
-    timer = game.time.create(false);
-
-    //  Set a TimerEvent to occur after 2 seconds
-    timer.loop(2000, updateCounter, this);
-
-    //  Start the timer running - this is important!
-    //  It won't start automatically, allowing you to hook it to button events and the like.
-    timer.start();
-}
-
-function render(){
-    game.debug.text('Time until event: ' + timer.duration.toFixed(0), 32, 32);
-    game.debug.text('Loop Count: ' + total, 32, 64);
-}
-
-function updateCounter(){
-    /*counter++;
-    console.log(counter);
-    */
-   total++;
-   console.log(total);
+    this.add.image('enemy',0,0);
 }
 
 function update(){
 
 }
-
 
 var Spawner = (function(x,y,topLeft,topRight,botLeft,botRight){
     this.x = x;
@@ -71,6 +38,8 @@ var Spawner = (function(x,y,topLeft,topRight,botLeft,botRight){
     var ScreenH, ScreenW;
 
     var Spawning = false;
+
+    var image;
 
 
     //fill variables to increase difficulty
@@ -155,10 +124,12 @@ var Spawner = (function(x,y,topLeft,topRight,botLeft,botRight){
 
     //spawn enemy to top left
     this.SpawnEnemyTL = function(){
+        console.log("spawningTL");
         for (i=0;i<topLeft.length;i++){
             if (!topLeft[i].GetActive()){
                 topLeft[i].SetPos(0,0);
                 topLeft[i].SetActive(true);
+                drawEnemy(topLeft[i]);
                 break;
             }
         }
@@ -235,5 +206,18 @@ var Spawner = (function(x,y,topLeft,topRight,botLeft,botRight){
         }
     }
 
+    //this loads the image of the enemy
+    this.loadEnemy = function(){
+        //this.load.image('enemy', 'images/bidoff.jpg');
+    }
+
+
+    //this takes a enemy type, passes in its position, draws the image on that position
+    this.drawEnemy = function(E){
+        var TempE = E;
+        var tempX = TempE.GetPosX();
+        var tempY = TempE.GetPosY();
+        this.add.image('enemy',tempX,tempY);
+    }
 
 });

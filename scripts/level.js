@@ -14,7 +14,6 @@ var game = new Phaser.Game(config);
 
 function preload ()
 {
-
     var randPreload = Phaser.Math.Between(0, 1); 
 
     //Preload  ----------- FOREST MAP -----------

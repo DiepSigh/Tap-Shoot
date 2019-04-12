@@ -84,6 +84,14 @@ var Enemy = (function(x,y,health,tag,speed,damage,maxSpeed, active){
         this.y = y;
     }
 
+    this.GetPosX = function(){
+        return this.x;
+    }
+
+    this.GetPosY = function(){
+        return this.y;
+    }
+
     //this is an update function to set the new speed, damage and health of the enemies
     this.UpdateEnemy = function(s,d,h){
         this.speed = s;
@@ -103,10 +111,10 @@ var Enemy = (function(x,y,health,tag,speed,damage,maxSpeed, active){
 
 
     function preload(){
-        this.load.image('Enemy', 'sprites/enemy.jpg');
+        //this.load.image('Enemy', 'sprites/enemy.jpg');
     }
 
     function create(){
-        this.add.image(this.x,this.y,'Enemy');
+        //this.add.image(this.x,this.y,'Enemy');
     }
 });

@@ -109,4 +109,4 @@ var config = {
     scene: [ MenuScene, GameScene, UIScene ]
 };
 
-var game = new Phaser.Game(config);
+//var game = new Phaser.Game(config);
