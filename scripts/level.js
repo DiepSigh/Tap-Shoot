@@ -34,8 +34,16 @@ var forestSound;
 var launchArrow;
 var impactArrow;
 
+var enemyLeftSide;
+var enemyRightSide;
+
+
 function preload ()
 {
+    //Enemy sprite preload 
+    this.load.spritesheet('enemyRightSide', 'images/enemy/bat/bat_RightSide.png', { frameWidth: 97, frameHeight: 62, endFrame: 6} );
+    this.load.spritesheet('enemyLeftSide', 'images/enemy/bat/bat_LeftSide.png', { frameWidth: 97, frameHeight: 62, endFrame: 6} );
+
     //Sound Effects
     this.load.audio('launchArrow', ['audio/launch.mp3']);
     this.load.audio('impactArrow', ['audio/impact.mp3']);
@@ -493,6 +501,55 @@ function create ()
                     }); 
 
 
+
+
+
+                    // ---------- ENEMIES SPRITE ANIMATIONS HERE ----------  //
+                       
+                    // enemies for RIGHT SIDE
+                    //constractor
+                    enemyRightSide = {
+                        key : 'enemyRightSide',
+                        frames: this.anims.generateFrameNumbers('enemyRightSide', {start: 1, end: 6, first: 1}),
+                        frameRate: 15, // how fast animation plays
+                        repeat: 500 // how many times animation repeats 
+                        
+                    };
+                    //call constractor
+                    this.anims.create(enemyRightSide);
+                
+                    var enemyRightTop = this.add.sprite(700,100, 'enemyRightSide');
+                    enemyRightTop.anims.play('enemyRightSide');
+
+                    var enemyRightBot = this.add.sprite(700,700, 'enemyRightSide');
+                    enemyRightBot.anims.play('enemyRightSide');
+
+
+
+                    // enemies for LEFT SIDE
+                    //constructor
+                    enemyLeftSide = {
+                        key : 'enemyLeftSide',
+                        frames: this.anims.generateFrameNumbers('enemyLeftSide', {start: 1, end: 6, first: 1}),
+                        frameRate: 15, // how fast animation plays
+                        repeat: 500 // how many times animation repeats 
+                        
+                    };
+                    //call constractor
+                    this.anims.create(enemyLeftSide);
+                
+                    var enemyLeftTop = this.add.sprite(100,100, 'enemyLeftSide');
+                    enemyLeftTop.anims.play('enemyLeftSide');
+                                    
+                    var enemyLeftBot = this.add.sprite(100,700, 'enemyLeftSide');
+                    enemyLeftBot.anims.play('enemyLeftSide');
+
+                    ////// --------- DONE WITH SPRITE ANIMATION --------- ///////
+
+
+
+
+
         //Play theme sound            
         levelTheme =  this.sound.add('levelTheme');
         levelTheme.play();
@@ -500,8 +557,6 @@ function create ()
         forestSound = this.sound.add('atmosphereSound');
         forestSound.play();
         forestSound.loop = true;
-
-        
 
     resize();
 
@@ -529,6 +584,7 @@ function resize() {
 function update()
 {
 
+    
    // resize();
 }
 
