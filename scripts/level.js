@@ -1,5 +1,5 @@
 var config = {
-    type: Phaser.CANVAS,
+    type: Phaser.AUTO, 
     width: 800,
     height: 800,
     physics: {
@@ -13,6 +13,16 @@ var config = {
         preload: preload,
         create: create,
         update: update
+    },
+    audio: {
+        disableWebAudio: true,
+        mute: false,
+        volume: 1,
+        rate: 1,
+        detune: 0,
+        seek: 0,
+        loop: false,
+        delay: 0
     }
 };
 
@@ -25,6 +35,8 @@ var topRightButton;
 var botLeftButton;
 var botRightButton;
 
+var levelTheme;
+var forestSound;
 //PLAYER VARIABLES
 var HP = 3;
 var speed = 1; //speed of arrow
@@ -50,8 +62,14 @@ var scoreText = '';
 var lifeText = '';
 var levelText = '';
 
+var launchArrow;
+var impactArrow;
+
 function preload ()
 {
+    //Sound Effects
+    this.load.audio('launchArrow', ['audio/launch.mp3']);
+    this.load.audio('impactArrow', ['audio/impact.mp3']);
     //PLAYER
     this.load.image('player', 'images/link.png');
     this.load.image('arrowTR', 'images/arrowTR.png');
@@ -65,8 +83,8 @@ function preload ()
     this.load.image('magicArrowTL', 'images/magicArrowTL.png');
 
     //Image controller buttons
-    
     this.load.image('button', 'images/button.png');
+
 
     //Generation random number for preload
     var randPreload = Phaser.Math.Between(0, 1); 
@@ -76,6 +94,11 @@ function preload ()
     {
         //TEST
         //this.load.image('test', 'test.png');
+
+        //level audio theme preload
+        this.load.audio('levelTheme', ['audio/levelThemeMap1.mp3' ]);
+        this.load.audio('atmosphereSound', ['audio/forestSound.mp3' ]);
+
 
         //Background tiles
         this.load.image('bg', 'images/map/forest/bg.png');
@@ -122,6 +145,10 @@ function preload ()
         //TEST
         //this.load.image('test', 'test.png');
 
+        //level audio theme preload
+        this.load.audio('levelTheme', ['audio/levelThemeMap2.mp3']);
+        this.load.audio('atmosphereSound', ['audio/desertSound.mp3' ]);
+
         //Background tiles
         this.load.image('bg', 'images/map/desert/bg.png');
 
@@ -165,6 +192,10 @@ function preload ()
 
 function create ()
 {
+
+    launchArrow =  this.sound.add('launchArrow'); // <--- activation sound then player shoots arrow
+    impactArrow = this.sound.add('impactArrow'); // <--- activation sound then arrow impacts enemy
+
     
     var tempX = 50;
     var tempY = 50;
@@ -373,6 +404,8 @@ function create ()
         tempY = tempY + 100;
         tempX = 50;
 
+
+
     }
 
      // --------------- BUTTONS ARE HERE  ---------------  // 
@@ -394,6 +427,10 @@ function create ()
 
                 centerButton.on('pointerdown', function(pointer)
                     {
+                       
+                        launchArrow.play();
+                        impactArrow.play();
+
                         if (magicCoins >= 10) {
                             magicShootTL(arrows);
                             magicShootTR(arrows);
@@ -422,6 +459,8 @@ function create ()
                 topLeftButton.on('pointerdown', function(pointer)
                     {
                         shootTL(arrows);
+                        launchArrow.play();
+                        impactArrow.play();
                        console.log("topLeftButtonPressed");
                     });
 
@@ -443,6 +482,8 @@ function create ()
                 topRightButton.on('pointerdown', function(pointer)
                     {
                         shootTR(arrows);
+                        launchArrow.play();
+                        impactArrow.play();
                        console.log("topRightButtonPressed");
                     });   
 
@@ -464,6 +505,8 @@ function create ()
                 botLeftButton.on('pointerdown', function(pointer)
                     {
                         shootBL(arrows);
+                        launchArrow.play();
+                        impactArrow.play();
                        console.log("botLeftButtonPressed");
                     });    
 
@@ -485,9 +528,19 @@ function create ()
                 botRightButton.on('pointerdown', function(pointer)
                     {
                         shootBR(arrows);
+                        launchArrow.play();
+                        impactArrow.play();
                        console.log("botRightButtonPressed");
                     }); 
 
+
+        //Play theme sound            
+        levelTheme =  this.sound.add('levelTheme');
+        levelTheme.play();
+        levelTheme.loop = true;
+        forestSound = this.sound.add('atmosphereSound');
+        forestSound.play();
+        forestSound.loop = true;
     //PLAYER               
     var arrows = this.add.group();
     player = this.physics.add.image(400, 400, 'player');
