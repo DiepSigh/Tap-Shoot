@@ -65,8 +65,27 @@ var levelText = '';
 var launchArrow;
 var impactArrow;
 
+var enemyLeftSide;
+var enemyRightSide;
+
+var magicLeftTop;
+var magicLeftBot;
+var magicRightTop;
+var magicRightBot;
+
+
+
 function preload ()
 {
+    //Enemy sprite preload 
+    this.load.spritesheet('enemyRightSide', 'images/enemy/bat/bat_RightSide.png', { frameWidth: 97, frameHeight: 62, endFrame: 5} );
+    this.load.spritesheet('enemyLeftSide', 'images/enemy/bat/bat_LeftSide.png', { frameWidth: 97, frameHeight: 62, endFrame: 5} );
+    //Magic sprites preload
+    this.load.spritesheet('magicLeftTop', 'images/magic/magicLT.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
+    this.load.spritesheet('magicRightTop', 'images/magic/magicRT.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
+    this.load.spritesheet('magicLeftBot', 'images/magic/magicLB.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
+    this.load.spritesheet('magicRightBot', 'images/magic/magicRB.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
+
     //Sound Effects
     this.load.audio('launchArrow', ['audio/launch.mp3']);
     this.load.audio('impactArrow', ['audio/impact.mp3']);
@@ -533,7 +552,126 @@ function create ()
                     }); 
 
 
-        //Play theme sound            
+
+
+
+                    // ---------- ENEMIES SPRITE ANIMATIONS HERE ----------  //
+                       
+                    // enemies for RIGHT SIDE
+                    //constructor
+                    enemyRightSide = {
+                        key : 'enemyRightSide',
+                        frames: this.anims.generateFrameNumbers('enemyRightSide', {start: 1, end: 6, first: 1}),
+                        frameRate: 12, // how fast animation plays
+                        repeat: 500 // how many times animation repeats 
+                        
+                    };
+                    //call constractor
+                    this.anims.create(enemyRightSide);
+                
+                    //add sprites based on constructor and call animation play
+                    var enemyRightTop = this.add.sprite(700,100, 'enemyRightSide');
+                    enemyRightTop.anims.play('enemyRightSide');
+
+                    var enemyRightBot = this.add.sprite(700,700, 'enemyRightSide');
+                    enemyRightBot.anims.play('enemyRightSide');
+
+
+
+                    // enemies for LEFT SIDE
+                    //constructor
+                    enemyLeftSide = {
+                        key : 'enemyLeftSide',
+                        frames: this.anims.generateFrameNumbers('enemyLeftSide', {start: 1, end: 6, first: 1}),
+                        frameRate: 12, // how fast animation plays
+                        repeat: 500 // how many times animation repeats 
+                        
+                    };
+                    //call constructor
+                    this.anims.create(enemyLeftSide);
+                
+                    //add sprites based on constructor and call animation play
+                    var enemyLeftTop = this.add.sprite(100,100, 'enemyLeftSide');
+                    enemyLeftTop.anims.play('enemyLeftSide');
+                                    
+                    var enemyLeftBot = this.add.sprite(100,700, 'enemyLeftSide');
+                    enemyLeftBot.anims.play('enemyLeftSide');
+
+
+
+                    // magic for LEFT TOP SIDE
+                    //constructor
+                    magicLeftTop = {
+                        key : 'magicLeftTop',
+                        frames: this.anims.generateFrameNumbers('magicLeftTop', {start: 1, end: 4, first: 1}),
+                        frameRate: 12, // how fast animation plays
+                        repeat: 500 // how many times animation repeats 
+                        
+                    };
+                    //call constructor
+                    this.anims.create(magicLeftTop);
+                
+                    //add sprites based on constructor and call animation play
+                    var magicLeftTop = this.add.sprite(350,350, 'magicLeftTop');
+                    magicLeftTop.anims.play('magicLeftTop');
+
+                    // magic for LEFT BOT SIDE
+                    //constructor
+                    magicLeftBot = {
+                        key : 'magicLeftBot',
+                        frames: this.anims.generateFrameNumbers('magicLeftBot', {start: 1, end: 4, first: 1}),
+                        frameRate: 12, // how fast animation plays
+                        repeat: 500 // how many times animation repeats 
+                        
+                    };
+                    //call constructor
+                    this.anims.create(magicLeftBot);
+                
+                    //add sprites based on constructor and call animation play
+                    var magicLeftBot = this.add.sprite(350,450, 'magicLeftBot');
+                    magicLeftBot.anims.play('magicLeftBot');
+
+
+                    // magic for RIGHT TOP SIDE
+                    //constructor
+                    magicRightTop = {
+                        key : 'magicRightTop',
+                        frames: this.anims.generateFrameNumbers('magicRightTop', {start: 1, end: 4, first: 1}),
+                        frameRate: 12, // how fast animation plays
+                        repeat: 500 // how many times animation repeats 
+                        
+                    };
+                    //call constructor
+                    this.anims.create(magicRightTop);
+                
+                    //add sprites based on constructor and call animation play
+                    var magicRightTop = this.add.sprite(450,350, 'magicRightTop');
+                    magicRightTop.anims.play('magicRightTop');
+
+                    
+                    // magic for RIGHT BOT SIDE
+                    //constructor
+                    magicRightBot = {
+                        key : 'magicRightBot',
+                        frames: this.anims.generateFrameNumbers('magicRightBot', {start: 1, end: 4, first: 1}),
+                        frameRate: 12, // how fast animation plays
+                        repeat: 500 // how many times animation repeats 
+                        
+                    };
+                    //call constructor
+                    this.anims.create(magicRightBot);
+                
+                    //add sprites based on constructor and call animation play
+                    var magicRightBot = this.add.sprite(450,450, 'magicRightBot');
+                    magicRightBot.anims.play('magicRightBot');
+                                    
+
+                    ////// --------- DONE WITH SPRITE ANIMATION --------- ///////
+
+
+
+
+        //Play theme sound here           
         levelTheme =  this.sound.add('levelTheme');
         levelTheme.play();
         levelTheme.loop = true;
