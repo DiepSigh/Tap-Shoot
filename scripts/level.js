@@ -2,6 +2,13 @@ var config = {
     type: Phaser.AUTO, 
     width: 800,
     height: 800,
+    physics: {
+        default: "arcade",
+        arcade: {
+            debug: true,
+            fps: 60
+        }
+    },
     scene: {
         preload: preload,
         create: create,
@@ -30,6 +37,37 @@ var botRightButton;
 
 var levelTheme;
 var forestSound;
+//PLAYER VARIABLES
+var HP = 3;
+var speed = 1; //speed of arrow
+var kills = 0;
+var score = 0;
+var magicCharge = 1;
+var magicCoins = 0;
+//Arrows
+var arrowTRActive = false;
+var arrowTLActive = false;
+var arrowBRActive = false;
+var arrowBLActive = false;
+//Magic Arrows
+var magicArrowTRActive = false;
+var magicArrowTLActive = false;
+var magicArrowBRActive = false;
+var magicArrowBLActive = false;
+//Cursor
+var sin = Math.sin;
+var cos = Math.cos;
+var atan2 = Math.atan2;
+//Text Display
+var magicText = '';
+var scoreText = '';
+var lifeText = '';
+var levelText = '';
+
+var magicTemp = 0;
+var scoreTemp = 0;
+var lifeTemp = 0;
+var levelTemp = 0;
 
 var launchArrow;
 var impactArrow;
@@ -38,12 +76,10 @@ var magic;
 var enemyLeftSide;
 var enemyRightSide;
 
-var magicLeftTop;
-var magicLeftBot;
-var magicRightTop;
-var magicRightBot;
-
-
+var magicArrowTL;
+var magicArrowBL;
+var magicArrowTR;
+var magicArrowBR;
 
 function preload ()
 {
@@ -51,20 +87,22 @@ function preload ()
     this.load.spritesheet('enemyRightSide', 'images/enemy/bat/bat_RightSide.png', { frameWidth: 97, frameHeight: 62, endFrame: 5} );
     this.load.spritesheet('enemyLeftSide', 'images/enemy/bat/bat_LeftSide.png', { frameWidth: 97, frameHeight: 62, endFrame: 5} );
     //Magic sprites preload
-    this.load.spritesheet('magicLeftTop', 'images/magic/magicLT.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
-    this.load.spritesheet('magicRightTop', 'images/magic/magicRT.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
-    this.load.spritesheet('magicLeftBot', 'images/magic/magicLB.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
-    this.load.spritesheet('magicRightBot', 'images/magic/magicRB.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
-
+    this.load.spritesheet('magicArrowTL', 'images/magic/magicLT.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
+    this.load.spritesheet('magicArrowTR', 'images/magic/magicRT.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
+    this.load.spritesheet('magicArrowBL', 'images/magic/magicLB.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
+    this.load.spritesheet('magicArrowBR', 'images/magic/magicRB.png', { frameWidth: 100, frameHeight: 100, endFrame: 3} );
     //Sound Effects
     this.load.audio('launchArrow', ['audio/launch.mp3']);
     this.load.audio('impactArrow', ['audio/impact.mp3']);
-    this.load.audio('magic', ['audio/magic.mp3']);
-
+    //PLAYER
+    this.load.image('player', 'images/archer.png');
+    this.load.image('arrowTR', 'images/arrowTR.png');
+    this.load.image('arrowTL', 'images/arrowTL.png');
+    this.load.image('arrowBR', 'images/arrowBR.png');
+    this.load.image('arrowBL', 'images/arrowBL.png');
 
     //Image controller buttons
     this.load.image('button', 'images/button.png');
-
 
     //Generation random number for preload
     var randPreload = Phaser.Math.Between(0, 1); 
@@ -118,7 +156,6 @@ function preload ()
         this.load.image('grass02', 'images/map/forest/grass02.png');
         this.load.image('grass03', 'images/map/forest/grass03.png');
         this.load.image('grass04', 'images/map/forest/grass04.png');
-
     }
 
     //Preload  ----------- DESERT MAP -----------
@@ -136,7 +173,6 @@ function preload ()
 
         //Background tiles
         this.load.image('bg', 'images/map/desert/bg.png');
-
 
         //Enemies spawn towers
         this.load.image('enemy_spawn_tower', 'images/map/desert/enemy_spawn_tower.png');
@@ -171,10 +207,7 @@ function preload ()
         this.load.image('grass02', 'images/map/desert/grass02.png');
         this.load.image('grass03', 'images/map/desert/grass03.png');
         this.load.image('grass04', 'images/map/desert/grass04.png');
-
     }
-
-
 }
 
 function create ()
@@ -182,7 +215,6 @@ function create ()
 
     launchArrow =  this.sound.add('launchArrow'); // <--- activation sound then player shoots arrow
     impactArrow = this.sound.add('impactArrow'); // <--- activation sound then arrow impacts enemy
-    magic = this.sound.add('magic');
     
     var tempX = 50;
     var tempY = 50;
@@ -201,7 +233,6 @@ function create ()
             if(x === 4 && y === 4 ) 
             {
                 this.add.image(tempX - 50, tempY - 50, 'tower'); 
-
             }
 
             // <--- Spawn ruins enemy spawn
@@ -223,8 +254,6 @@ function create ()
             if(x === 7 && y === 7 ) 
             { 
                  this.add.image(tempX, tempY, 'ruins_right'); this.add.image(tempX, tempY - 25, 'enemy_spawn_tower');
-      
-
             }
 
             // Adding on map bunch of trees or bushes from the top
@@ -235,7 +264,6 @@ function create ()
             {
                 
                 this.add.image(tempX, tempY, 'bg'); // <--- Adding background tile
-
 
                         var randGrass = Phaser.Math.Between(0, 5);
                         if(randGrass === 0) { this.add.image(tempX, tempY, 'grass01'); }
@@ -264,7 +292,6 @@ function create ()
                         if(randTree === 4) { this.add.image(tempX, tempY - 35, 'tree05'); }
                         if(randTree === 5) { this.add.image(tempX, tempY - 35, 'tree06'); }
                         if(randTree === 6) { this.add.image(tempX, tempY - 35, 'tree07'); }
-
 
             }
 
@@ -313,7 +340,6 @@ function create ()
                  x === 3 && y === 2 || x === 4 && y === 2 
             )
             {
-                
               
                 var randGrass = Phaser.Math.Between(0, 5);
                 if(randGrass === 0) { this.add.image(tempX, tempY, 'grass01'); }
@@ -391,8 +417,6 @@ function create ()
         tempY = tempY + 100;
         tempX = 50;
 
-
-
     }
 
      // --------------- BUTTONS ARE HERE  ---------------  // 
@@ -414,9 +438,15 @@ function create ()
 
                 centerButton.on('pointerdown', function(pointer)
                     {
-                       
-                        magic.play();
-                        
+
+                        if (magicCharge >= 1) {
+                            magicShootTL(arrows);
+                            magicShootTR(arrows);
+                            magicShootBL(arrows);
+                            magicShootBR(arrows);
+                            playShootSound();
+                            magicCharge--;
+                        }
                     console.log("CenterButtonPressed");
                     });
 
@@ -437,9 +467,8 @@ function create ()
 
                 topLeftButton.on('pointerdown', function(pointer)
                     {
-                        launchArrow.play();
-                        impactArrow.play();
-
+                        shootTL(arrows);
+                        
                        console.log("topLeftButtonPressed");
                     });
 
@@ -460,9 +489,8 @@ function create ()
 
                 topRightButton.on('pointerdown', function(pointer)
                     {
-                        launchArrow.play();
-                        impactArrow.play();
-
+                        shootTR(arrows);
+                        
                        console.log("topRightButtonPressed");
                     });   
 
@@ -483,9 +511,8 @@ function create ()
 
                 botLeftButton.on('pointerdown', function(pointer)
                     {
-                        launchArrow.play();
-                        impactArrow.play();
-
+                        shootBL(arrows);
+                        
                        console.log("botLeftButtonPressed");
                     });    
 
@@ -506,131 +533,127 @@ function create ()
 
                 botRightButton.on('pointerdown', function(pointer)
                     {
-                        launchArrow.play();
-                        impactArrow.play();
-
+                        shootBR(arrows);
+                        
                        console.log("botRightButtonPressed");
                     }); 
 
 
+        // ---------- ENEMIES SPRITE ANIMATIONS HERE ----------  //
+            
+        // enemies for RIGHT SIDE
+        //constructor
+        enemyRightSide = {
+            key : 'enemyRightSide',
+            frames: this.anims.generateFrameNumbers('enemyRightSide', {start: 1, end: 6, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constractor
+        this.anims.create(enemyRightSide);
+    
+        //add sprites based on constructor and call animation play
+        var enemyRightTop = this.add.sprite(700,100, 'enemyRightSide');
+        enemyRightTop.anims.play('enemyRightSide');
+
+        var enemyRightBot = this.add.sprite(700,700, 'enemyRightSide');
+        enemyRightBot.anims.play('enemyRightSide');
 
 
 
-                    // ---------- ENEMIES SPRITE ANIMATIONS HERE ----------  //
-                       
-                    // enemies for RIGHT SIDE
-                    //constructor
-                    enemyRightSide = {
-                        key : 'enemyRightSide',
-                        frames: this.anims.generateFrameNumbers('enemyRightSide', {start: 1, end: 6, first: 1}),
-                        frameRate: 12, // how fast animation plays
-                        repeat: 500 // how many times animation repeats 
+        // enemies for LEFT SIDE
+        //constructor
+        enemyLeftSide = {
+            key : 'enemyLeftSide',
+            frames: this.anims.generateFrameNumbers('enemyLeftSide', {start: 1, end: 6, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(enemyLeftSide);
+    
+        //add sprites based on constructor and call animation play
+        var enemyLeftTop = this.add.sprite(100,100, 'enemyLeftSide');
+        enemyLeftTop.anims.play('enemyLeftSide');
                         
-                    };
-                    //call constractor
-                    this.anims.create(enemyRightSide);
-                
-                    //add sprites based on constructor and call animation play
-                    var enemyRightTop = this.add.sprite(700,100, 'enemyRightSide');
-                    enemyRightTop.anims.play('enemyRightSide');
-
-                    var enemyRightBot = this.add.sprite(700,700, 'enemyRightSide');
-                    enemyRightBot.anims.play('enemyRightSide');
+        var enemyLeftBot = this.add.sprite(100,700, 'enemyLeftSide');
+        enemyLeftBot.anims.play('enemyLeftSide');
 
 
 
-                    // enemies for LEFT SIDE
-                    //constructor
-                    enemyLeftSide = {
-                        key : 'enemyLeftSide',
-                        frames: this.anims.generateFrameNumbers('enemyLeftSide', {start: 1, end: 6, first: 1}),
-                        frameRate: 12, // how fast animation plays
-                        repeat: 500 // how many times animation repeats 
-                        
-                    };
-                    //call constructor
-                    this.anims.create(enemyLeftSide);
-                
-                    //add sprites based on constructor and call animation play
-                    var enemyLeftTop = this.add.sprite(100,100, 'enemyLeftSide');
-                    enemyLeftTop.anims.play('enemyLeftSide');
-                                    
-                    var enemyLeftBot = this.add.sprite(100,700, 'enemyLeftSide');
-                    enemyLeftBot.anims.play('enemyLeftSide');
+        // magic for LEFT TOP SIDE
+        //constructor
+        magicArrowTL = {
+            key : 'magicArrowTL',
+            frames: this.anims.generateFrameNumbers('magicArrowTL', {start: 1, end: 4, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(magicArrowTL);
+    
+        //add sprites based on constructor and call animation play
+        magicArrowTL = this.add.sprite(350,350, 'magicArrowTL');
+        magicArrowTL.alpha = 0;
+        magicArrowTL.anims.play('magicArrowTL');
+
+        // magic for LEFT BOT SIDE
+        //constructor
+        magicArrowBL = {
+            key : 'magicArrowBL',
+            frames: this.anims.generateFrameNumbers('magicArrowBL', {start: 1, end: 4, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(magicArrowBL);
+    
+        //add sprites based on constructor and call animation play
+        magicArrowBL = this.add.sprite(350,450, 'magicArrowBL');
+        magicArrowBL.alpha = 0;
+        magicArrowBL.anims.play('magicArrowBL');
 
 
+        // magic for RIGHT TOP SIDE
+        //constructor
+        magicArrowTR = {
+            key : 'magicArrowTR',
+            frames: this.anims.generateFrameNumbers('magicArrowTR', {start: 1, end: 4, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(magicArrowTR);
+    
+        //add sprites based on constructor and call animation play
+        magicArrowTR = this.add.sprite(450,350, 'magicArrowTR');
+        magicArrowTR.alpha = 0;
+        magicArrowTR.anims.play('magicArrowTR');
 
-                    // magic for LEFT TOP SIDE
-                    //constructor
-                    magicLeftTop = {
-                        key : 'magicLeftTop',
-                        frames: this.anims.generateFrameNumbers('magicLeftTop', {start: 1, end: 4, first: 1}),
-                        frameRate: 12, // how fast animation plays
-                        repeat: 500 // how many times animation repeats 
-                        
-                    };
-                    //call constructor
-                    this.anims.create(magicLeftTop);
-                
-                    //add sprites based on constructor and call animation play
-                    var magicLeftTop = this.add.sprite(350,350, 'magicLeftTop');
-                    magicLeftTop.anims.play('magicLeftTop');
+        
+        // magic for RIGHT BOT SIDE
+        //constructor
+        magicArrowBR = {
+            key : 'magicArrowBR',
+            frames: this.anims.generateFrameNumbers('magicArrowBR', {start: 1, end: 4, first: 1}),
+            frameRate: 12, // how fast animation plays
+            repeat: 500 // how many times animation repeats 
+            
+        };
+        //call constructor
+        this.anims.create(magicArrowBR);
+    
+        //add sprites based on constructor and call animation play
+        magicArrowBR = this.add.sprite(450,450, 'magicArrowBR');
+        magicArrowBR.alpha = 0;
+        magicArrowBR.anims.play('magicArrowBR');
 
-                    // magic for LEFT BOT SIDE
-                    //constructor
-                    magicLeftBot = {
-                        key : 'magicLeftBot',
-                        frames: this.anims.generateFrameNumbers('magicLeftBot', {start: 1, end: 4, first: 1}),
-                        frameRate: 12, // how fast animation plays
-                        repeat: 500 // how many times animation repeats 
-                        
-                    };
-                    //call constructor
-                    this.anims.create(magicLeftBot);
-                
-                    //add sprites based on constructor and call animation play
-                    var magicLeftBot = this.add.sprite(350,450, 'magicLeftBot');
-                    magicLeftBot.anims.play('magicLeftBot');
-
-
-                    // magic for RIGHT TOP SIDE
-                    //constructor
-                    magicRightTop = {
-                        key : 'magicRightTop',
-                        frames: this.anims.generateFrameNumbers('magicRightTop', {start: 1, end: 4, first: 1}),
-                        frameRate: 12, // how fast animation plays
-                        repeat: 500 // how many times animation repeats 
-                        
-                    };
-                    //call constructor
-                    this.anims.create(magicRightTop);
-                
-                    //add sprites based on constructor and call animation play
-                    var magicRightTop = this.add.sprite(450,350, 'magicRightTop');
-                    magicRightTop.anims.play('magicRightTop');
-
-                    
-                    // magic for RIGHT BOT SIDE
-                    //constructor
-                    magicRightBot = {
-                        key : 'magicRightBot',
-                        frames: this.anims.generateFrameNumbers('magicRightBot', {start: 1, end: 4, first: 1}),
-                        frameRate: 12, // how fast animation plays
-                        repeat: 500 // how many times animation repeats 
-                        
-                    };
-                    //call constructor
-                    this.anims.create(magicRightBot);
-                
-                    //add sprites based on constructor and call animation play
-                    var magicRightBot = this.add.sprite(450,450, 'magicRightBot');
-                    magicRightBot.anims.play('magicRightBot');
-                                    
-
-                    ////// --------- DONE WITH SPRITE ANIMATION --------- ///////
-
-
-
+        ////// --------- DONE WITH SPRITE ANIMATION --------- ///////
 
         //Play theme sound here           
         levelTheme =  this.sound.add('levelTheme');
@@ -640,10 +663,104 @@ function create ()
         forestSound.play();
         forestSound.loop = true;
 
-    resize();
+    //PLAYER               
+    var arrows = this.add.group();
+    player = this.physics.add.image(400, 400, 'player');
+    
+    //DISPLAY TEXT
+    magicText = this.add.text(340, 10, 'Magic Charge', { fontFamily: 'Arial', fontSize: 32, color: '#ffffff' });
+    scoreText = this.add.text(340, 50, 'Score', { fontFamily: 'Arial', fontSize: 32, color: '#ffffff' });
+    lifeText = this.add.text(140, 10, 'HP', { fontFamily: 'Arial', fontSize: 32, color: '#ffffff' });
+    levelText = this.add.text(140, 50, 'Level', { fontFamily: 'Arial', fontSize: 32, color: '#ffffff' });
 
+    resize();
 }
 
+//SOUND FUNCTIONS
+function playShootSound(){
+    launchArrow.play();
+    impactArrow.play();
+}
+
+//-------------------------- ARROWS --------------------------------
+function shootTR(arrows){
+    if (!arrowTRActive){
+        //creates sprite via group
+        arrowTR = arrows.create(450, 350, 'arrowTR');
+        playShootSound();
+        arrowTRActive = true;
+    }    
+}
+
+function shootTL(arrows){
+    if (!arrowTLActive){
+        arrowTL = arrows.create(350, 350, 'arrowTL');
+        playShootSound();
+        arrowTLActive = true;
+    }
+}
+
+function shootBR(arrows){
+    if (!arrowBRActive){
+        arrowBR = arrows.create(450, 450, 'arrowBR');
+        playShootSound();
+        arrowBRActive = true;
+    }
+}
+
+function shootBL(arrows){
+    if (!arrowBLActive){
+        arrowBL = arrows.create(350, 450, 'arrowBL');
+        playShootSound();
+        arrowBLActive = true;
+    }
+}
+
+//MAGIC SHOOT ARROW I S H E R E
+function magicShootBL(){
+    magicArrowBL.alpha = 1;
+    magicArrowBLActive = true;
+}
+function magicShootBR(){
+    magicArrowBR.alpha = 1;
+    magicArrowBRActive = true;
+}
+function magicShootTL(){
+    magicArrowTL.alpha = 1;
+    magicArrowTLActive = true;
+}
+function magicShootTR(){
+    magicArrowTR.alpha = 1; 
+    magicArrowTRActive = true;
+}
+
+//ARROW COLLISION CHECK
+function checkOverlapTop(spriteA) {
+    //when arrow reaches top of canvas kinda
+    if (spriteA.y < (config.height - 750)){
+        return true;
+    } else{
+        return false;
+    }
+}
+
+function checkOverlapBot(spriteA) {
+    if (spriteA.y > (config.height - 50)){
+        return true;
+    } else{
+        return false;
+    }
+}
+
+//Player ROTATION
+function pointerMove (pointer) {  
+    var angleToPointer = Phaser.Math.Angle.BetweenPoints(player, pointer);
+    var angleDelta = angleToPointer - player.rotation;
+    
+    angleDelta = atan2(sin(angleDelta), cos(angleDelta));
+
+    player.rotation = angleToPointer;
+}
 
 //Resize whole canvas are here
 function resize() {
@@ -665,9 +782,117 @@ function resize() {
 
 function update()
 {
-
+    //ARROW CHECK
+    if (arrowTRActive) {
+        arrowTR.x += speed;
+        arrowTR.y -= speed;
+        if (checkOverlapTop(arrowTR)){
+            arrowTR.destroy();
+            magicCoins++;
+            arrowTRActive = false;
+        };
+    }
+    if (arrowTLActive) {
+        arrowTL.x -= speed;
+        arrowTL.y -= speed;
+        if (checkOverlapTop(arrowTL)){
+            arrowTL.destroy();
+            magicCoins++;
+            arrowTLActive = false;
+        };
+    }
+    if (arrowBRActive) {
+        arrowBR.x += speed;
+        arrowBR.y += speed;
+        if (checkOverlapBot(arrowBR)){
+            arrowBR.destroy();
+            magicCoins++;
+            arrowBRActive = false;
+        };
+    }
+    if (arrowBLActive) {
+        arrowBL.x -= speed;
+        arrowBL.y += speed;
+        if (checkOverlapBot(arrowBL)){
+            arrowBL.destroy();
+            magicCoins++;
+            arrowBLActive = false;
+        };
+    }
     
-   // resize();
+    if (magicArrowBLActive) {
+        magicArrowBL.x -= speed;
+        magicArrowBL.y += speed;
+        if (checkOverlapBot(magicArrowBL)){
+            magicArrowBL.alpha = 0;
+            magicArrowBLActive = false;
+            magicArrowBL.x = 350;
+            magicArrowBL.y = 450;
+        };
+    }
+    if (magicArrowBRActive) {
+        magicArrowBR.x += speed;
+        magicArrowBR.y += speed;
+        if (checkOverlapBot(magicArrowBR)){
+            magicArrowBR.alpha = 0;
+            magicArrowBRActive = false;
+            magicArrowBR.x = 450;
+            magicArrowBR.y = 450;
+        };
+    }
+    if (magicArrowTRActive) {
+        magicArrowTR.x += speed;
+        magicArrowTR.y -= speed;
+        if (checkOverlapTop(magicArrowTR)){
+            magicArrowTR.alpha = 0;
+            magicArrowTRActive = false;
+            magicArrowTR.x = 450;
+            magicArrowTR.y = 350;
+        };
+    }
+    if (magicArrowTLActive) {
+        magicArrowTL.x -= speed;
+        magicArrowTL.y -= speed;
+        if (checkOverlapTop(magicArrowTL)){
+            magicArrowTL.alpha = 0;
+            magicArrowTLActive = false;
+            magicArrowTL.x = 350;
+            magicArrowTL.y = 350;
+        };
+    }
+
+    //LEVEL UP / ARROW SPEED UP
+    if (kills >= 20) {
+        speed++;
+        kills = 0;
+        score += 5;
+    }
+
+    if (magicCoins == 10) {
+        magicCharge++;
+        magicCoins -= 10;
+    }
+
+    //Update Text.
+    //If statements to avoid lag
+    if (magicTemp != magicCharge) {
+        magicText.text = "Magic Charge: " + magicCharge;
+        magicTemp = magicCharge;
+    }
+    if (scoreTemp != score) {
+        scoreText.text = "Score: " + score;
+        scoreTemp = score;
+    }
+    if (lifeTemp != HP) {
+        lifeText.text = "HP: " + HP;
+        lifeTemp = HP;
+    }
+    if (levelTemp != speed) {
+        levelText.text = "Level: " + speed;
+        levelTemp = speed;
+    }
+
+    pointerMove(this.input.activePointer);
 }
 
 
