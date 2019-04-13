@@ -12,9 +12,8 @@ var Spawner = new Phaser.Class(function(x,y,topLeft,topRight,botLeft,botRight){
 
     var Spawning = false;
 
-    var image;
 
-
+    var e = new Enemy(0,0,0,"enemy", 10,10,10,false);
     //fill variables to increase difficulty
     this.fillVars = function(){
         var temp = new Enemy(10,10,100,"enemy",10,10,10,false);

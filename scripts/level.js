@@ -15,7 +15,6 @@ var config = {
         update: update
     }
 };
-
 var game = new Phaser.Game(config);
 
 window.addEventListener("resize", resize, false);
@@ -51,11 +50,19 @@ var topLeft = [];
 var topRight = [];
 var botLeft = [];
 var botRight = [];
-var ScreenH, ScreenW;
+var ScreenW = config.width;
+var ScreenH = config.height;
+var spawning = false;
+var timer = 0;
+var Num = 0;
 
 
 function preload ()
 {
+    FillTopLeft();
+    FillTopRight();
+    FillBotLeft();
+    FillBotRight();
 
     //PLAYER
     this.load.image('player', 'images/link.png');
@@ -165,13 +172,10 @@ function preload ()
         this.load.image('grass04', 'images/map/desert/grass04.png');
 
     }
-
-
 }
 
 function create ()
 {
-    
     var tempX = 50;
     var tempY = 50;
 
@@ -493,6 +497,13 @@ function create ()
 
     var enemies = this.add.group();
 
+    SpawnEnemyTL(enemies);
+    SpawnEnemyTR(enemies);
+    SpawnEnemyBL(enemies);
+    SpawnEnemyBR(enemies);
+
+    //this.add.image(0,0,'enemy');    
+
     resize();
 }
 
@@ -562,8 +573,8 @@ function pointerMove (pointer) {
     player.rotation = angleToPointer;
 }
 
-//Spawner Search x,y,health,speed,damage,maxSpeed,active
-function FillTopLeft(enemies){
+//Spawner Search ////x,y,health,speed,damage,maxSpeed,active
+function FillTopLeft(){
     if (topLeft.length != 8){
         for (i=0;i<8;i++){
             var temp;
@@ -579,7 +590,6 @@ function FillTopRight(){
             var temp;
             temp = new Enemy(EX,EY,Ehp,Espeed,Edmg,EmxSpeed,Eactive);
             topRight.push(temp);
-            console.log(topRight);
         }
     }
 }
@@ -636,83 +646,137 @@ function RemoveEnemyTR(){
         }
     }
     //spawn enemy to top left
-    function SpawnEnemyTL(){
+    function SpawnEnemyTL(enemies){
         for (i=0;i<topLeft.length;i++){
             if (!topLeft[i].GetActive()){
                 topLeft[i].SetPos(0,0);
-                topLeft[i].SetActive(true);
-                drawEnemy(topLeft[i]);
-                break;
+                var temp = enemies.create(0,0,'enemy');
+                topLeft[i].addImage(temp);
+                topLeft[i].image.alpha = 0;
             }
         }
     }
     
     //spawn enemy to top right 
-       function SpawnEnemyTR(){
+       function SpawnEnemyTR(enemies){
         for (i=0;i<topRight.length;i++){
             if (!topRight[i].GetActive()){
                 topRight[i].SetPos(ScreenW,0);
-                topRight[i].SetActive(true);
-                break;
+                var temp = enemies.create(ScreenW,0,'enemy');
+                topRight[i].addImage(temp);
+                topRight[i].image.alpha = 0;
             }
         }
     }
     
     //spawn enemy to bottom left
-    function SpawnEnemyBL(){
+    function SpawnEnemyBL(enemies){
         for (i=0;i<botLeft.length;i++){
             if (!botLeft[i].GetActive()){
                 botLeft[i].SetPos(0,ScreenH);
-                botLeft[i].SetActive(true);
-                break;
+                var temp = enemies.create(0,ScreenH - 50, 'enemy')
+                botLeft[i].addImage(temp);
+                botLeft[i].image.alpha = 0;
             }
         }
     }
     
     //spawn enemy to bottom right
-    function SpawnEnemyBR(){
-        for (i=0;i<botRight;i++){
+    function SpawnEnemyBR(enemies){
+        for (i=0;i<botRight.length;i++){
             if(!botRight[i].GetActive()){
                 botRight[i].SetPos(ScreenW, ScreenH);
-                botRight[i].SetActive(true);
-                break;
+                var temp = enemies.create(ScreenW,ScreenH, 'enemy');
+                botRight[i].addImage(temp);
+                botRight[i].image.alpha = 0;
             }
         }
     }
-    
+
     // need to re write the spawning of enemies over time.
     //this function runs a timer and spawns in an enemy based on time.
     function SpawnEnemies(){
-        if (counter == 2){
-            var temp = Phaser.Math.Between(0, 3);
-            if (temp == 0){
-                SpawnEnemyTL();
+        timer++;
+        if (Num == 0 && !spawning){
+            for (i=0;i<botLeft.length;i++){
+                if (!botLeft[i].GetActive()){
+                    botLeft[i].SetActive(true);
+                    botLeft[i].image.alpha = 1;
+                }
             }
-            else if(temp == 1){
-                SpawnEnemyTR();
+            spawning = true;
+        }
+        if (Num == 1 && !spawning){
+            for (i=0;i<botRight.length;i++){
+                if (!botRight[i].GetActive()){
+                    botRight[i].SetActive(true);
+                    botRight[i].image.alpha = 1; 
+                }
             }
-            else if(temp == 2){
-                SpawnEnemyBL();
+            spawning = true;
+        }
+        if(Num == 2 && !spawning){
+            for(i=0;i<topRight.length;i++){
+                if (!topRight[i].GetActive()){
+                    topRight[i].SetActive(true);
+                    topRight[i].image.alpha = 1;
+                }
             }
-            else if(temp == 3){
-                SpawnEnemyBR();
+            spawning = true;
+        }
+        if(Num == 3 && !spawning){
+            for(i=0;i<topLeft.length;i++){
+                if(!topLeft[i].GetActive()){
+                    topLeft[i].SetActive(true);
+                    topLeft[i].image.alpha = 1;
+                }
+            }
+            spawning = true;
+        }
+        if(timer >= 100){
+            timer = 0;
+            spawning = false;
+            Num = Phaser.Math.Between(0,3);
+        }
+    }
+/*
+    function EnemyDamagingCheck(){
+        for (i=0;i<3;i++){
+            if (i == 0){
+                for(h=0; h<8;h++){
+                    if(topLeft[h].GetActive() && collisionTopL(topLeft[h],arrowTL)){
+                        console.log("TESTING TOPL");
+                        topLeft[h].TakeDamage(100);
+                    }
+                }
+            }
+            if (i == 1){
+                for (k=0;k<8;k++){
+                    if (topRight[k].GetActive() && checkOverlapTop(topRight[k])){
+                        console.log("TESTING TOPR");
+                        topRight[k].TakeDamage(100);
+                    }
+                }
+            }
+            if (i==2){
+                for (j=0;j<8;j++){
+                    if (botLeft[j].GetActive() && checkOverlapBot(botLeft[j])){
+                        console.log("TESTING BOTL");
+                        botLeft[j].TakeDamage(100);
+                    }
+                }
+            }
+            if (i==3){
+                for (l=0;l<8;l++){
+                    if (botRight[l].GetActive() && checkOverlapBot(botRight[l])){
+                        console.log("TESTING BOTR");
+                        botRight[l].TakeDamage(100);
+                }
             }
         }
-        counter = 0;
     }
-    //this takes a enemy type, passes in its position, draws the image on that position
-    function drawEnemy(E){
-        var TempE = E;
-        var tempX = TempE.GetPosX();
-        var tempY = TempE.GetPosY();
-        //enemies.create(0,0,'enemy');
-    }
-
-    //Move Enemy Test 
-    function moveToMiddle(){
-
-    }
-
+}
+*/
 
 //Resize whole canvas are here
 function resize() {
@@ -737,13 +801,8 @@ function resize() {
 
 function update()
 {
-    //Spawn stuff
-    FillTopLeft();
-    FillTopRight();
-    FillBotLeft();
-    FillBotRight();
-    SpawnEnemyTL();
-
+    SpawnEnemies();
+    EnemyDamagingCheck();
 
     //ARROW CHECK
     if (arrowTRActive) {
@@ -788,7 +847,6 @@ function update()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////// Enemy Script written by Rick Berenguer
 var Enemy = (function(x,y,health,speed,damage,maxSpeed,active){
-
     this.x = x;
     this.y = y;
     this.health = health;
@@ -797,9 +855,15 @@ var Enemy = (function(x,y,health,speed,damage,maxSpeed,active){
     this.maxSpeed = maxSpeed;
     this.active = active;
 
+    this.image;
+    //this.image = (0,0, 'enemy');
     //increases health to increase challenge
     this.increaseHealth = function(h){
         this.health +=h;
+    }
+
+    this.addImage = function(img){
+        this.image = img;
     }
 
     //increases speed to increase challenge
@@ -814,6 +878,9 @@ var Enemy = (function(x,y,health,speed,damage,maxSpeed,active){
 
     //need some help moving enemies
 
+    this.create = function(){
+        this.add.image(0,0,'enemy');
+    }
 
     //take damage for this enemy
     this.TakeDamage = function(dmg){
