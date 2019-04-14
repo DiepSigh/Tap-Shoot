@@ -39,6 +39,7 @@ var levelTheme;
 var forestSound;
 //PLAYER VARIABLES
 var HP = 10;
+var level = 1;
 var speed = 0.5; //speed of arrow
 var kills = 0;
 var score = 0;
@@ -681,7 +682,7 @@ function create ()
 //SOUND FUNCTIONS
 function playShootSound(){
     launchArrow.play();
-    impactArrow.play();
+    //impactArrow.play();
 }
 
 //-------------------------- ARROWS --------------------------------
@@ -736,7 +737,15 @@ function magicShootTR(){
     magicArrowTRActive = true;
 }
 
-//ARROW COLLISION CHECK
+function checkOverlapPlayer(enemy){
+    if (enemy.y >= 350 && enemy.y <= 450){
+        return true;
+    }else {
+        return false;
+    }
+}
+
+//ARROW CORNER COLLISION CHECK
 function checkOverlapTop(spriteA) {
     //when arrow reaches top of canvas kinda
     if (spriteA.y < (config.height - 750)){
@@ -754,7 +763,7 @@ function checkOverlapBot(spriteA) {
     }
 }
 
-//MAGIC ARROW COLLISION CHECK
+//ARROW ENEMY COLLISION CHECK
 function checkOverlapArrowBot(arrow, enemy) {
     if (arrow.y >= (enemy.y-40)){
         return true;
@@ -813,42 +822,117 @@ function update()
 {
     enemyMovement();
 
+    //Check if Enemy reached middle
+    if (checkOverlapPlayer(enemyLeftBot)) {
+        HP--;
+        enemyLeftBot.x = 0;
+        enemyLeftBot.y = 800;
+    }
+    if (checkOverlapPlayer(enemyRightBot)) {
+        HP--;
+        enemyRightBot.x = 800;
+        enemyRightBot.y = 800;
+    }
+    if (checkOverlapPlayer(enemyLeftTop)) {
+        HP--;
+        enemyLeftTop.x = 0;
+        enemyLeftTop.y = 0;
+    }
+    if (checkOverlapPlayer(enemyRightTop)) {
+        HP--;
+        enemyRightTop.x = 800;
+        enemyRightTop.y = 0;
+    }
+
     //ARROW CHECK
     if (arrowTRActive) {
         arrowTR.x += speed;
         arrowTR.y -= speed;
-        if (checkOverlapTop(arrowTR)){
-            arrowTR.destroy();
+        // if (checkOverlapTop(arrowTR)){
+        //     arrowTR.destroy();
+        //     magicCoins++;
+        //     arrowTRActive = false;
+        // };
+        if (checkOverlapArrowTop(arrowTR, enemyRightTop)){
+            impactArrow.play();
+            //Reset Enemy
+            enemyRightTop.x = 800;
+            enemyRightTop.y = 0;
+            //Update Values
+            score++;
+            kills++;
             magicCoins++;
+            //Destroy arrow
+            arrowTR.destroy();
             arrowTRActive = false;
-        };
+        }
     }
+
     if (arrowTLActive) {
         arrowTL.x -= speed;
         arrowTL.y -= speed;
-        if (checkOverlapTop(arrowTL)){
-            arrowTL.destroy();
+        // if (checkOverlapTop(arrowTL)){
+        //     arrowTL.destroy();
+        //     magicCoins++;
+        //     arrowTLActive = false;
+        // };
+        if (checkOverlapArrowTop(arrowTL, enemyLeftTop)){
+            impactArrow.play();
+            //Reset Enemy
+            enemyLeftTop.x = 0;
+            enemyLeftTop.y = 0;
+            //Update Values
+            score++;
+            kills++;
             magicCoins++;
+            //Destroy arrow
+            arrowTL.destroy();
             arrowTLActive = false;
-        };
+        }
     }
     if (arrowBRActive) {
         arrowBR.x += speed;
         arrowBR.y += speed;
-        if (checkOverlapBot(arrowBR)){
-            arrowBR.destroy();
+        // if (checkOverlapBot(arrowBR)){
+        //     arrowBR.destroy();
+        //     magicCoins++;
+        //     arrowBRActive = false;
+        // };
+        if (checkOverlapArrowBot(arrowBR, enemyRightBot)){
+            impactArrow.play();
+            //Reset Enemy
+            enemyRightBot.x = 800;
+            enemyRightBot.y = 800;
+            //Update Values
+            score++;
+            kills++;
             magicCoins++;
+            //Destroy arrow
+            arrowBR.destroy();
             arrowBRActive = false;
-        };
+        }
     }
     if (arrowBLActive) {
         arrowBL.x -= speed;
         arrowBL.y += speed;
-        if (checkOverlapBot(arrowBL)){
-            arrowBL.destroy();
+        // if (checkOverlapBot(arrowBL)){
+        //     arrowBL.destroy();
+        //     magicCoins++;
+        //     arrowBLActive = false;
+        // };
+        if (checkOverlapArrowBot(arrowBL, enemyLeftBot)){
+            impactArrow.play();
+            //Reset Enemy
+            enemyLeftBot.x = 0;
+            enemyLeftBot.y = 800;
+            //Update Values
+            score++;
+            kills++;
             magicCoins++;
+            //Destroy arrow
+            arrowBL.destroy();
             arrowBLActive = false;
-        };
+        }
     }
     
     if (magicArrowBLActive) {
@@ -931,6 +1015,7 @@ function update()
     //LEVEL UP / ARROW SPEED UP
     if (kills >= 20) {
         speed+= 0.5;
+        level++;
         kills = 0;
         score += 5;
     }
@@ -955,7 +1040,7 @@ function update()
         lifeTemp = HP;
     }
     if (levelTemp != speed) {
-        levelText.text = "Level: " + speed;
+        levelText.text = "Level: " + level;
         levelTemp = speed;
     }
 
