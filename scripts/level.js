@@ -38,8 +38,9 @@ var botRightButton;
 var levelTheme;
 var forestSound;
 //PLAYER VARIABLES
-var HP = 3;
-var speed = 1; //speed of arrow
+var HP = 10;
+var level = 1;
+var speed = 0.5; //speed of arrow
 var kills = 0;
 var score = 0;
 var magicCharge = 1;
@@ -71,6 +72,7 @@ var levelTemp = 0;
 
 var launchArrow;
 var impactArrow;
+var magic;
 
 var enemyLeftSide;
 var enemyRightSide;
@@ -93,6 +95,7 @@ function preload ()
     //Sound Effects
     this.load.audio('launchArrow', ['audio/launch.mp3']);
     this.load.audio('impactArrow', ['audio/impact.mp3']);
+    this.load.audio('magic', ['audio/magic.mp3']);
     //PLAYER
     this.load.image('player', 'images/archer.png');
     this.load.image('arrowTR', 'images/arrowTR.png');
@@ -214,6 +217,7 @@ function create ()
 
     launchArrow =  this.sound.add('launchArrow'); // <--- activation sound then player shoots arrow
     impactArrow = this.sound.add('impactArrow'); // <--- activation sound then arrow impacts enemy
+    magic = this.sound.add('magic');
     
     var tempX = 50;
     var tempY = 50;
@@ -443,7 +447,7 @@ function create ()
                             magicShootTR(arrows);
                             magicShootBL(arrows);
                             magicShootBR(arrows);
-                            playShootSound();
+                            magic.play();
                             magicCharge--;
                         }
                     console.log("CenterButtonPressed");
@@ -553,10 +557,10 @@ function create ()
         this.anims.create(enemyRightSide);
     
         //add sprites based on constructor and call animation play
-        var enemyRightTop = this.add.sprite(700,100, 'enemyRightSide');
+        enemyRightTop = this.add.sprite(700,100, 'enemyRightSide');
         enemyRightTop.anims.play('enemyRightSide');
 
-        var enemyRightBot = this.add.sprite(700,700, 'enemyRightSide');
+        enemyRightBot = this.add.sprite(700,700, 'enemyRightSide');
         enemyRightBot.anims.play('enemyRightSide');
 
 
@@ -574,10 +578,10 @@ function create ()
         this.anims.create(enemyLeftSide);
     
         //add sprites based on constructor and call animation play
-        var enemyLeftTop = this.add.sprite(100,100, 'enemyLeftSide');
+        enemyLeftTop = this.add.sprite(100,100, 'enemyLeftSide');
         enemyLeftTop.anims.play('enemyLeftSide');
                         
-        var enemyLeftBot = this.add.sprite(100,700, 'enemyLeftSide');
+        enemyLeftBot = this.add.sprite(100,700, 'enemyLeftSide');
         enemyLeftBot.anims.play('enemyLeftSide');
 
 
@@ -678,7 +682,7 @@ function create ()
 //SOUND FUNCTIONS
 function playShootSound(){
     launchArrow.play();
-    impactArrow.play();
+    //impactArrow.play();
 }
 
 //-------------------------- ARROWS --------------------------------
@@ -733,7 +737,15 @@ function magicShootTR(){
     magicArrowTRActive = true;
 }
 
-//ARROW COLLISION CHECK
+function checkOverlapPlayer(enemy){
+    if (enemy.y >= 350 && enemy.y <= 450){
+        return true;
+    }else {
+        return false;
+    }
+}
+
+//ARROW CORNER COLLISION CHECK
 function checkOverlapTop(spriteA) {
     //when arrow reaches top of canvas kinda
     if (spriteA.y < (config.height - 750)){
@@ -745,6 +757,23 @@ function checkOverlapTop(spriteA) {
 
 function checkOverlapBot(spriteA) {
     if (spriteA.y > (config.height - 50)){
+        return true;
+    } else{
+        return false;
+    }
+}
+
+//ARROW ENEMY COLLISION CHECK
+function checkOverlapArrowBot(arrow, enemy) {
+    if (arrow.y >= (enemy.y-40)){
+        return true;
+    } else{
+        return false;
+    }
+}
+
+function checkOverlapArrowTop(arrow, enemy) {
+    if (arrow.y <= (enemy.y+40)){
         return true;
     } else{
         return false;
@@ -778,50 +807,146 @@ function resize() {
     }
 }
 
+function enemyMovement(){
+    enemyLeftBot.x += speed;
+    enemyLeftBot.y -= speed;
+    enemyLeftTop.x += speed;
+    enemyLeftTop.y += speed;
+    enemyRightBot.x -= speed;
+    enemyRightBot.y -= speed;
+    enemyRightTop.x -= speed;
+    enemyRightTop.y += speed;
+}
 
 function update()
 {
+    enemyMovement();
+
+    //Check if Enemy reached middle
+    if (checkOverlapPlayer(enemyLeftBot)) {
+        HP--;
+        enemyLeftBot.x = 0;
+        enemyLeftBot.y = 800;
+    }
+    if (checkOverlapPlayer(enemyRightBot)) {
+        HP--;
+        enemyRightBot.x = 800;
+        enemyRightBot.y = 800;
+    }
+    if (checkOverlapPlayer(enemyLeftTop)) {
+        HP--;
+        enemyLeftTop.x = 0;
+        enemyLeftTop.y = 0;
+    }
+    if (checkOverlapPlayer(enemyRightTop)) {
+        HP--;
+        enemyRightTop.x = 800;
+        enemyRightTop.y = 0;
+    }
+
     //ARROW CHECK
     if (arrowTRActive) {
         arrowTR.x += speed;
         arrowTR.y -= speed;
-        if (checkOverlapTop(arrowTR)){
-            arrowTR.destroy();
+        // if (checkOverlapTop(arrowTR)){
+        //     arrowTR.destroy();
+        //     magicCoins++;
+        //     arrowTRActive = false;
+        // };
+        if (checkOverlapArrowTop(arrowTR, enemyRightTop)){
+            impactArrow.play();
+            //Reset Enemy
+            enemyRightTop.x = 800;
+            enemyRightTop.y = 0;
+            //Update Values
+            score++;
+            kills++;
             magicCoins++;
+            //Destroy arrow
+            arrowTR.destroy();
             arrowTRActive = false;
-        };
+        }
     }
+
     if (arrowTLActive) {
         arrowTL.x -= speed;
         arrowTL.y -= speed;
-        if (checkOverlapTop(arrowTL)){
-            arrowTL.destroy();
+        // if (checkOverlapTop(arrowTL)){
+        //     arrowTL.destroy();
+        //     magicCoins++;
+        //     arrowTLActive = false;
+        // };
+        if (checkOverlapArrowTop(arrowTL, enemyLeftTop)){
+            impactArrow.play();
+            //Reset Enemy
+            enemyLeftTop.x = 0;
+            enemyLeftTop.y = 0;
+            //Update Values
+            score++;
+            kills++;
             magicCoins++;
+            //Destroy arrow
+            arrowTL.destroy();
             arrowTLActive = false;
-        };
+        }
     }
     if (arrowBRActive) {
         arrowBR.x += speed;
         arrowBR.y += speed;
-        if (checkOverlapBot(arrowBR)){
-            arrowBR.destroy();
+        // if (checkOverlapBot(arrowBR)){
+        //     arrowBR.destroy();
+        //     magicCoins++;
+        //     arrowBRActive = false;
+        // };
+        if (checkOverlapArrowBot(arrowBR, enemyRightBot)){
+            impactArrow.play();
+            //Reset Enemy
+            enemyRightBot.x = 800;
+            enemyRightBot.y = 800;
+            //Update Values
+            score++;
+            kills++;
             magicCoins++;
+            //Destroy arrow
+            arrowBR.destroy();
             arrowBRActive = false;
-        };
+        }
     }
     if (arrowBLActive) {
         arrowBL.x -= speed;
         arrowBL.y += speed;
-        if (checkOverlapBot(arrowBL)){
-            arrowBL.destroy();
+        // if (checkOverlapBot(arrowBL)){
+        //     arrowBL.destroy();
+        //     magicCoins++;
+        //     arrowBLActive = false;
+        // };
+        if (checkOverlapArrowBot(arrowBL, enemyLeftBot)){
+            impactArrow.play();
+            //Reset Enemy
+            enemyLeftBot.x = 0;
+            enemyLeftBot.y = 800;
+            //Update Values
+            score++;
+            kills++;
             magicCoins++;
+            //Destroy arrow
+            arrowBL.destroy();
             arrowBLActive = false;
-        };
+        }
     }
     
     if (magicArrowBLActive) {
         magicArrowBL.x -= speed;
         magicArrowBL.y += speed;
+        if (checkOverlapArrowBot(magicArrowBL, enemyLeftBot)){
+            impactArrow.play();
+            //Reset enemy
+            enemyLeftBot.x = 0;
+            enemyLeftBot.y = 800;
+            //update values
+            score++;
+            kills++;
+        }
         if (checkOverlapBot(magicArrowBL)){
             magicArrowBL.alpha = 0;
             magicArrowBLActive = false;
@@ -832,6 +957,15 @@ function update()
     if (magicArrowBRActive) {
         magicArrowBR.x += speed;
         magicArrowBR.y += speed;
+        if (checkOverlapArrowBot(magicArrowBR, enemyRightBot)){
+            impactArrow.play();
+            //Reset enemy
+            enemyRightBot.x = 800;
+            enemyRightBot.y = 800;
+            //update values
+            score++;
+            kills++;
+        }
         if (checkOverlapBot(magicArrowBR)){
             magicArrowBR.alpha = 0;
             magicArrowBRActive = false;
@@ -842,6 +976,15 @@ function update()
     if (magicArrowTRActive) {
         magicArrowTR.x += speed;
         magicArrowTR.y -= speed;
+        if (checkOverlapArrowTop(magicArrowTR, enemyRightTop)){
+            impactArrow.play();
+            //Reset enemy
+            enemyRightTop.x = 800;
+            enemyRightTop.y = 0;
+            //update values
+            score++;
+            kills++;
+        }
         if (checkOverlapTop(magicArrowTR)){
             magicArrowTR.alpha = 0;
             magicArrowTRActive = false;
@@ -852,6 +995,15 @@ function update()
     if (magicArrowTLActive) {
         magicArrowTL.x -= speed;
         magicArrowTL.y -= speed;
+        if (checkOverlapArrowTop(magicArrowTL, enemyLeftTop)){
+            impactArrow.play();
+            //Reset enemy
+            enemyLeftTop.x = 0;
+            enemyLeftTop.y = 0;
+            //update values
+            score++;
+            kills++;
+        }
         if (checkOverlapTop(magicArrowTL)){
             magicArrowTL.alpha = 0;
             magicArrowTLActive = false;
@@ -862,7 +1014,8 @@ function update()
 
     //LEVEL UP / ARROW SPEED UP
     if (kills >= 20) {
-        speed++;
+        speed+= 0.5;
+        level++;
         kills = 0;
         score += 5;
     }
@@ -887,7 +1040,7 @@ function update()
         lifeTemp = HP;
     }
     if (levelTemp != speed) {
-        levelText.text = "Level: " + speed;
+        levelText.text = "Level: " + level;
         levelTemp = speed;
     }
 
